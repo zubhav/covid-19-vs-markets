@@ -49,13 +49,13 @@
 							}
 						];
 					}	else {
-						alert("Stock not found");
+						alert(`Stock not found: ${input}`);
 					}
 				} else {
-					alert("Stock already selected");
+					alert(`Stock already selected: ${input}`);
 				}
 			} else {
-				alert("Symbol should be between 1-5 characters excluding the $");
+				alert(`Symbol should be between 1-5 characters excluding $: ${input}`);
 			}
 			currentStock = ""
 		}
