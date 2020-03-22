@@ -1,14 +1,12 @@
 import symbols from '../_data/symbols.json'
 import faunadb from 'faunadb'
 const q = faunadb.query
-const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY })
 
 export default (request, response) => {
     const input = request.query.symbol.toUpperCase()
 
-    console.log(input)
-    console.log(process.env.FAUNA_SECRET_KEY)
-
+    const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY })
+    
     try {
         console.log('make the query ==========')
 
