@@ -5,7 +5,7 @@ const dbClient = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY })
 
 export default (request, response) => {
     const input = request.query.symbol.toUpperCase()
-
+    console.log(input, dbClient)
     try {
         dbClient.query(
             q.Match(q.Index('get_by_symbol'), 'ABMD')
