@@ -130,7 +130,7 @@
           max={maxNumberOfDays - 1}
           bind:value={currentDay}
 				/>
-        <p>Current date: {history[0].time[currentDay]}</p>
+        <p>Current date: {history[0][0].time[currentDay]}</p>
         <p>Market trading days since COVID-19: {currentDay}</p>
       </section>
     {/if}
