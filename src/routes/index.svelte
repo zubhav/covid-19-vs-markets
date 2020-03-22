@@ -111,9 +111,9 @@
         {#each history as symbol}
 			{#each symbol as item (item.symbol)}
 			<li>
-				<p>{symbol.symbol}</p>
-				<p>Opened at: {symbol.open[currentDay]}</p>
-				<p>Closed at: {symbol.close[currentDay]}</p>
+				<p>{item.symbol}</p>
+				<p>Opened at: {item.open[currentDay]}</p>
+				<p>Closed at: {item.close[currentDay]}</p>
 			</li>
 			{/each}
           	<li class="h-4" />
