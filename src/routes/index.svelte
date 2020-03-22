@@ -24,8 +24,7 @@
 		try {
 			const result = await fetch(`/api/symbols/${symbolQuery}`)
 			const data = await result.json()
-			const symbol = await data
-			return symbol
+			return data
 		} catch(err) {
 			console.info("Error retrieving this symbol")
 			console.info(err)
@@ -36,32 +35,25 @@
 		const input = currentStock.trim().toUpperCase()
 		const alreadyExists = options.find(option => option.symbol === input)
 
-		if(!alreadyExists) {
-			if (event.keyCode === 13 && input.length > 0) {
-				const result = await fetchSymbol(input)
+		if (event.keyCode === 13 && input.length > 0) {
+				if(!alreadyExists) {
+					const result = await fetchSymbol(input)
 
-				if(result) {
-					options = [
-						...options,
-						{
-							title: result.description,
-							symbol: result.symbol
-						}
-					];
+					if(result) {
+						options = [
+							...options,
+							{
+								title: result.description,
+								symbol: result.symbol
+							}
+						];
 				}	else {
-					alert("Stock not found");
+					alert("Stock already selected");
 				}
-				
 				currentStock = ""
 			} 
-		} else {
-			alert("Stock already selected");
 		}
 	};
-
-  // onMount(async () => {
-	// 	await fetchAndPopulateStockData(options)
-	// });
 
 	function getNewSymbols(entries, hist) {
 		return entries.filter(stock => {
