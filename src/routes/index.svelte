@@ -32,10 +32,11 @@
 	}
 
 	const handleSearchAndAddStock = async event => {
-		const input = currentStock.trim().toUpperCase()
+		const input = currentStock.trim().replace('$', '').toUpperCase()
 		const alreadyExists = options.find(option => option.symbol === input)
 
-		if (event.keyCode === 13 && input.length > 0) {
+		if (event.keyCode === 13) {
+			if(input.length > 0 && input.length <= 5){
 				if(!alreadyExists) {
 					const result = await fetchSymbol(input)
 
@@ -50,8 +51,11 @@
 					}	else {
 						alert("Stock not found");
 					}
+				} else {
+					alert("Stock already selected");
+				}
 			} else {
-				alert("Stock already selected");
+				alert("Symbol should be between 1-5 characters excluding the $");
 			}
 			currentStock = ""
 		}
