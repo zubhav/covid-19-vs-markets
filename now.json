@@ -1,7 +1,9 @@
 {
     "alias": ["covid-19-vs-market"],
     "env": {
-        "FINNHUB_API_KEY": "@finnhub_api_key"
+        "FINNHUB_API_KEY": "@finnhub_api_key",
+        "FAUNA_SECRET_KEY": "@fauna-secret-key"
+
     },
     "scope": "prubby"
 }
