@@ -8,7 +8,7 @@
             &copy; Copyright {year}
         </p>
         <p class="float-right">
-            Zubhav Ltd
+            Prubby
         </p>
     </section>
 </footer>

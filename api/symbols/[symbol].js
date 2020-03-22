@@ -1,19 +1,25 @@
 import symbols from '../_data/symbols.json'
 import faunadb from 'faunadb'
 const q = faunadb.query
-const dbClient = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY })
+const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY })
 
 export default (request, response) => {
     const input = request.query.symbol.toUpperCase()
-    
+
     console.log(input)
+    console.log(process.env.FAUNA_SECRET_KEY)
+
     try {
-        dbClient.query(
-            q.Match(q.Index('get_by_symbol'), 'ABMD')
+        console.log('make the query ==========')
+
+        client.query(
+            q.Match(q.Index('get_by_symbol'), input)
           )
           .then(res => console.log(res))
           .catch(err => console.log(err))
+        console.log('reach end ==========')
      } catch(err) {
+        console.log('CATCH ==========')
         console.log(err)
         response.status(500).json(err) 
     }
