@@ -108,13 +108,15 @@
       <p>Loading...</p>
     {:else}
       <ul>
-        {#each history as item (item.symbol)}
-          <li>
-            <p>{item.symbol}</p>
-            <p>Opened at: {item.open[currentDay]}</p>
-            <p>Closed at: {item.close[currentDay]}</p>
-          </li>
-          <li class="h-4" />
+        {#each history as symbol}
+			{#each symbol as item (item.symbol)}
+			<li>
+				<p>{symbol.symbol}</p>
+				<p>Opened at: {symbol.open[currentDay]}</p>
+				<p>Closed at: {symbol.close[currentDay]}</p>
+			</li>
+			{/each}
+          	<li class="h-4" />
         {/each}
       </ul>
     {/if}
