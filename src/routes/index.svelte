@@ -50,10 +50,10 @@
 					}	else {
 						alert("Stock not found");
 					}
-				currentStock = ""
 			} else {
 				alert("Stock already selected");
 			}
+			currentStock = ""
 		}
 	};
 
