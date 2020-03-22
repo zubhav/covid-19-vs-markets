@@ -10,15 +10,11 @@ export default async (request, response) => {
     try {
         console.log('make the query ==========')
 
-        client.query(
+        const a = await client.query(
             q.Match(q.Index('get_by_symbol'), input)
-          ).then(res => { 
-            console.log('---------THEN OF PROMISE--------')
-            console.log(res)
-          }).catch(err => {
-            console.log('---------CATCH OF PROMISE--------')
-            console.log(err)
-          })
+        )
+        
+        console.log(a)
         console.log('reach end ==========')
      } catch(err) {
         console.log('CATCH ==========')
