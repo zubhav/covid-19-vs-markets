@@ -6,15 +6,17 @@ export default (request, response) => {
     const input = request.query.symbol.toUpperCase()
 
     const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY })
-    
+
     try {
         console.log('make the query ==========')
 
-        client.query(
+        var c = client.query(
             q.Match(q.Index('get_by_symbol'), input)
           )
           .then(res => console.log(res))
           .catch(err => console.log(err))
+        console.log(c)
+        console.log(typeof c)
         console.log('reach end ==========')
      } catch(err) {
         console.log('CATCH ==========')
