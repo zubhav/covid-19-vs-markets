@@ -2,7 +2,7 @@ import symbols from '../_data/symbols.json'
 import faunadb from 'faunadb'
 const q = faunadb.query
 
-export default (request, response) => {
+export default async (request, response) => {
     const input = request.query.symbol.toUpperCase()
 
     const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY })
@@ -12,12 +12,10 @@ export default (request, response) => {
 
         client.query(
             q.Match(q.Index('get_by_symbol'), input)
-          )
-          .then(res => { 
+          ).then(res => { 
             console.log('---------THEN OF PROMISE--------')
             console.log(res)
-          })
-          .catch(err => {
+          }).catch(err => {
             console.log('---------CATCH OF PROMISE--------')
             console.log(err)
           })
