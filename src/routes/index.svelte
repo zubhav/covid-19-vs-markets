@@ -47,11 +47,13 @@
 								symbol: result.symbol
 							}
 						];
-				}	else {
-					alert("Stock already selected");
-				}
+					}	else {
+						alert("Stock not found");
+					}
 				currentStock = ""
-			} 
+			} else {
+				alert("Stock already selected");
+			}
 		}
 	};
 
