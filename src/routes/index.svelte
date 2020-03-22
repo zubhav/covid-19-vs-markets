@@ -80,8 +80,10 @@
   }
 
 	$: {
-  	options && fetchAndPopulateData(options);
+  		options && fetchAndPopulateData(options);
 	}
+
+	$: console.log(history)
 </script>
 
 <svelte:head>
