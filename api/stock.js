@@ -1,11 +1,12 @@
 import fetch from 'node-fetch'
+require('dotenv').config()
 
 export default async (request, response) => {
     const endpoint = 'https://finnhub.io/api/v1/stock/candle'
     const symbols = request.query.symbols.split(',')
 
     if(symbols && symbols.length > 0) {
-        const API_KEY = 'bpql2ivrh5reqvv1brr0'
+        const API_KEY = process.env.FINNHUB_API_KEY
         const firstDayOf2020 = '01/02/2020'
 
         let numberOfDays = 0

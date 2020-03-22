@@ -1,6 +1,7 @@
 {
     "alias": ["covid-19-vs-market"],
-    "build": {
-        "env": {}
-    }
+    "env": {
+        "FINNHUB_API_KEY": "@finnhub_api_key"
+    },
+    "scope": "prubby"
 }
