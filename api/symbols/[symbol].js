@@ -10,13 +10,17 @@ export default (request, response) => {
     try {
         console.log('make the query ==========')
 
-        var c = client.query(
+        client.query(
             q.Match(q.Index('get_by_symbol'), input)
           )
-          .then(res => console.log(res))
-          .catch(err => console.log(err))
-        console.log(c)
-        console.log(typeof c)
+          .then(res => { 
+            console.log('---------THEN OF PROMISE--------')
+            console.log(res)
+          })
+          .catch(err => {
+            console.log('---------CATCH OF PROMISE--------')
+            console.log(err)
+          })
         console.log('reach end ==========')
      } catch(err) {
         console.log('CATCH ==========')
