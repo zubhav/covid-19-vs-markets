@@ -32,9 +32,9 @@
 		}
 	}
 
-  const handleSearch = async event => {
+	const handleSearchAndAddStock = async event => {
 		const input = currentStock.trim().toUpperCase()
-		const alreadyExists = options.find(option => options.symbol === input)
+		const alreadyExists = options.find(option => option.symbol === input)
 
 		if(!alreadyExists) {
 			if (event.keyCode === 13 && input.length > 0) {
@@ -57,33 +57,41 @@
 		} else {
 			alert("Stock already selected");
 		}
-  };
+	};
 
-  onMount(async () => {
-		await fetchAndPopulateData(options)
-	});
+  // onMount(async () => {
+	// 	await fetchAndPopulateStockData(options)
+	// });
 
-  async function fetchAndPopulateData(options) {
-		const stocks = options.map(({ symbol }) => symbol)
-		const stocksQuery = stocks.join(',')
+	function getNewSymbols(entries, hist) {
+		return entries.filter(stock => {
+			return !hist.find(item => {
+				return item.find(({symbol}) => {
+					return stock === symbol
+				})
+			})
+		})
+	}
+	async function fetchAndPopulateStockData(options) {
+			const stocks = options.map(({ symbol }) => symbol)
+			const newEntries = getNewSymbols(stocks, history)
+			const stocksQuery = newEntries.join(',')
 
-		try {
-			const result = await fetch(`/api/stock?symbols=${stocksQuery}`)
-			const data = await result.json()
-			const { series, days } = data
-			history = [...history, ...series]
-			maxNumberOfDays = days
-		} catch(err) {
-			console.info("Error fetching stock data", stocks)
-			console.info(err)
-		}
-  }
-
-	$: {
-  		options && fetchAndPopulateData(options);
+			try {
+				const result = await fetch(`/api/stock?symbols=${stocksQuery}`)
+				const data = await result.json()
+				const { series, days } = data
+				history = [...history, ...series]
+				maxNumberOfDays = days
+			} catch(err) {
+				console.info("Error fetching stock data", stocks)
+				console.info(err)
+			}
 	}
 
-	$: console.log(history)
+	$: {
+  	fetchAndPopulateStockData(options);
+	}
 </script>
 
 <svelte:head>
@@ -101,7 +109,7 @@
       type="text"
       class="text-black"
       bind:value={currentStock}
-      on:keyup={handleSearch} 
+      on:keyup={handleSearchAndAddStock} 
 	/>
 
     {#if history.length === 0}
