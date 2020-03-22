@@ -14,7 +14,7 @@ export default async (request, response) => {
             q.Match(q.Index('get_by_symbol'), input)
         )
         
-        console.log(a)
+        a.then(res => console.log(res))
         console.log('reach end ==========')
      } catch(err) {
         console.log('CATCH ==========')
