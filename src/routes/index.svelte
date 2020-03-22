@@ -71,7 +71,7 @@
 			const result = await fetch(`/api/stock?symbols=${stocksQuery}`)
 			const data = await result.json()
 			const { series, days } = data
-			history = [...history, series]
+			history = [...history, ...series]
 			maxNumberOfDays = days
 		} catch(err) {
 			console.info("Error fetching stock data", stocks)
