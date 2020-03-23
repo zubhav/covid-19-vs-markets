@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { fetchFromApi } from "../utils/fetchFromApi";
 
   const API_KEY = "bpql2ivrh5reqvv1brr0";
 
@@ -12,84 +13,87 @@
       title: "Dow Jones Industrial Average",
       symbol: "DHY"
     }
-	];
-	
-	let history = []
+  ];
 
-	let currentDay = 0;
-	let currentStock = ""
-	let maxNumberOfDays
+  let history = [];
 
-	async function fetchSymbol(symbolQuery) {
-		try {
-			const result = await fetch(`/api/symbols/${symbolQuery}`)
-			const data = await result.json()
-			return data
-		} catch(err) {
-			console.info("Error retrieving this symbol")
-			console.info(err)
-		}
-	}
+  let currentDay = 0;
+  let currentStock = "";
+  let maxNumberOfDays;
 
-	const handleSearchAndAddStock = async event => {
-		const input = currentStock.trim().replace('$', '').toUpperCase()
-		const alreadyExists = options.find(option => option.symbol === input)
+  async function fetchSymbol(symbolQuery) {
+    try {
+      const result = await fetchFromApi(`/api/symbols/${symbolQuery}`);
+      const data = await result.json();
+      return data;
+    } catch (err) {
+      console.info("Error retrieving this symbol");
+      console.info(err);
+    }
+  }
 
-		if (event.keyCode === 13) {
-			if(input.length > 0 && input.length <= 5){
-				if(!alreadyExists) {
-					const result = await fetchSymbol(input)
+  const handleSearchAndAddStock = async event => {
+    const input = currentStock
+      .trim()
+      .replace("$", "")
+      .toUpperCase();
+    const alreadyExists = options.find(option => option.symbol === input);
 
-					if(result) {
-						options = [
-							...options,
-							{
-								title: result.title,
-								symbol: result.symbol
-							}
-						];
-					}	else {
-						alert(`Stock not found: ${input}`);
-					}
-				} else {
-					alert(`Stock already selected: ${input}`);
-				}
-			} else {
-				alert(`Symbol should be between 1-5 characters excluding $: ${input}`);
-			}
-			currentStock = ""
-		}
-	};
+    if (event.keyCode === 13) {
+      if (input.length > 0 && input.length <= 5) {
+        if (!alreadyExists) {
+          const result = await fetchSymbol(input);
 
-	function getNewSymbols(entries, hist) {
-		return entries.filter(stock => {
-			return !hist.find(item => {
-				return item.find(({symbol}) => {
-					return stock === symbol
-				})
-			})
-		})
-	}
-	async function fetchAndPopulateStockData(options) {
-			const stocks = options.map(({ symbol }) => symbol)
-			const newEntries = getNewSymbols(stocks, history)
-			const stocksQuery = newEntries.join(',')
+          if (result) {
+            options = [
+              ...options,
+              {
+                title: result.title,
+                symbol: result.symbol
+              }
+            ];
+          } else {
+            alert(`Stock not found: ${input}`);
+          }
+        } else {
+          alert(`Stock already selected: ${input}`);
+        }
+      } else {
+        alert(`Symbol should be between 1-5 characters excluding $: ${input}`);
+      }
+      currentStock = "";
+    }
+  };
 
-			try {
-				const result = await fetch(`/api/stock?symbols=${stocksQuery}`)
-				const data = await result.json()
-				const { series, days } = data
-				history = [...history, ...series]
-				maxNumberOfDays = days
-			} catch(err) {
-				console.info("Error fetching stock data", stocks)
-				console.info(err)
-			}
-	}
+  function getNewSymbols(entries, hist) {
+    return entries.filter(stock => {
+      return !hist.find(item => {
+        return item.find(({ symbol }) => {
+          return stock === symbol;
+        });
+      });
+    });
+  }
+  async function fetchAndPopulateStockData(options) {
+    const stocks = options.map(({ symbol }) => symbol);
+    const newEntries = getNewSymbols(stocks, history);
+    const stocksQuery = newEntries.join(",");
 
-	$: {
-  	fetchAndPopulateStockData(options);
-	}
+    try {
+      const result = await fetchFromApi(`/api/stock?symbols=${stocksQuery}`);
+      const data = await result.json();
+      const { series, days } = data;
+      history = [...history, ...series];
+      maxNumberOfDays = days;
+    } catch (err) {
+      console.info("Error fetching stock data", stocks);
+      console.info(err);
+    }
+  }
+
+  $: {
+    fetchAndPopulateStockData(options);
+  }
 </script>
 
 <svelte:head>
@@ -107,22 +111,21 @@
       type="text"
       class="text-black"
       bind:value={currentStock}
-      on:keyup={handleSearchAndAddStock} 
-	/>
+      on:keyup={handleSearchAndAddStock} />
 
     {#if history.length === 0}
       <p>Loading...</p>
     {:else}
       <ul>
         {#each history as symbol}
-			{#each symbol as item (item.symbol)}
-			<li>
-				<p>{item.symbol}</p>
-				<p>Opened at: {item.open[currentDay]}</p>
-				<p>Closed at: {item.close[currentDay]}</p>
-			</li>
-			{/each}
-          	<li class="h-4" />
+          {#each symbol as item (item.symbol)}
+            <li>
+              <p>{item.symbol}</p>
+              <p>Opened at: {item.open[currentDay]}</p>
+              <p>Closed at: {item.close[currentDay]}</p>
+            </li>
+          {/each}
+          <li class="h-4" />
         {/each}
       </ul>
     {/if}
@@ -134,8 +137,7 @@
           type="range"
           min="0"
           max={maxNumberOfDays - 1}
-          bind:value={currentDay}
-				/>
+          bind:value={currentDay} />
         <p>Current date: {history[0][0].time[currentDay]}</p>
         <p>Market trading days since COVID-19: {currentDay}</p>
       </section>
