@@ -7,13 +7,13 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "200.js",
+      "dest": "stock.js",
       "headers": {
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Allow-Methods": "*",
         "Access-Control-Allow-Origin": "*"
       },
-      "methods": ["OPTIONS"]
+      "methods": ["GET, OPTIONS"]
     }
   ],
   "scope": "prubby"
