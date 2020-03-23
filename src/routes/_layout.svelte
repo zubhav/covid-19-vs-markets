@@ -1,9 +1,9 @@
 <script>
-	import Footer from '../components/footer.svelte'
+    import Footer from '../components/footer.svelte'
 </script>
 
 <main>
-	<slot></slot>
+    <slot />
 </main>
 
-<Footer/>
+<Footer />
