@@ -15,6 +15,6 @@ export default async (request, response) => {
 
         response.status(200).json(symbol.data) 
      } catch(err) {
-        response.status(404).json() 
+        response.status(404)
     }
 }
