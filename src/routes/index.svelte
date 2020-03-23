@@ -26,6 +26,7 @@
         } catch (err) {
             console.info('Error retrieving this symbol')
             console.info(err)
+            return null
         }
     }
 

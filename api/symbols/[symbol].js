@@ -10,9 +10,10 @@ export default async (request, response) => {
         const symbol = await client.query(
             q.Get(q.Match(q.Index('get_by_symbol'), input))
         )
-
+        console.log(symbol)
         response.status(200).json(symbol.data)
     } catch (err) {
-        response.status(404)
+        console.log('catch', JSON.stringify(err))
+        response.status(404).send('Stock not found')
     }
 }

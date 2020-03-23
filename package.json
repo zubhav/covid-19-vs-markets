@@ -1,6 +1,6 @@
 {
-    "name": "portfolio",
-    "description": "COVID-19 vs Markets",
+    "name": "covid-19-vs-markets",
+    "description": "Dashboard for stocks affected by COVID-19",
     "version": "0.0.1",
     "scripts": {
         "dev": "sapper dev",

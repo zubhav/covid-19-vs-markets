@@ -1,14 +1,15 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "node": true
     },
     "parserOptions": {
         "ecmaVersion": 2019,
         "sourceType": "module"
     },
     "plugins": ["prettier", "svelte3"],
-    "extends": ["eslint:recommended"],
+    "extends": ["eslint:recommended", "prettier"],
     "overrides": [
         {
             "files": ["src/**/*.svelte"],
