@@ -12,7 +12,7 @@
         "Access-Control-Allow-Methods": "*",
         "Access-Control-Allow-Origin": "*"
       },
-      "methods": ["GET", "OPTIONS"]
+      "methods": ["GET"]
     }
   ],
   "scope": "prubby"
