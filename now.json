@@ -1,9 +1,20 @@
 {
-    "alias": ["covid-19-vs-market"],
-    "env": {
-        "FINNHUB_API_KEY": "@finnhub_api_key",
-        "FAUNA_SECRET_KEY": "@fauna_secret_key"
-
-    },
-    "scope": "prubby"
+  "alias": ["covid-19-vs-market"],
+  "env": {
+    "FINNHUB_API_KEY": "@finnhub_api_key",
+    "FAUNA_SECRET_KEY": "@fauna_secret_key"
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "200.js",
+      "headers": {
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Origin": "*"
+      },
+      "methods": ["OPTIONS"]
+    }
+  ],
+  "scope": "prubby"
 }
