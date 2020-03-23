@@ -44,7 +44,7 @@
 						options = [
 							...options,
 							{
-								title: result.description,
+								title: result.title,
 								symbol: result.symbol
 							}
 						];
