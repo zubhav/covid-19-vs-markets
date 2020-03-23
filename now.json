@@ -4,5 +4,15 @@
     "FINNHUB_API_KEY": "@finnhub_api_key",
     "FAUNA_SECRET_KEY": "@fauna_secret_key"
   },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "headers": {
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+  ],
   "scope": "prubby"
 }
