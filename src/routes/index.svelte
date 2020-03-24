@@ -1,5 +1,49 @@
 <script>
+    import { onMount } from 'svelte'
     import { fetchFromApi } from '../utils/fetchFromApi'
+
+    let canvas
+
+    function drawGraph(series) {
+        // let series = [100, 150, 20, 40, 120, 5, 96, 85, 43]
+        console.log(series)
+
+        const ctx = canvas.getContext('2d')
+        ctx.beginPath()
+
+        ctx.lineWidth = '3'
+        ctx.strokeStyle = 'black'
+        ctx.fillStyle = 'white'
+        ctx.rect(0, 0, 800, 500)
+        ctx.fillRect(0, 0, 800, 500)
+        ctx.stroke()
+
+        let xAxisSpacing = Math.round(800 / series.length)
+
+        let min = 226.0
+        let max = 338.34
+        let minMaxGap = max - min
+        let chunks = 500 / minMaxGap
+
+        for (let i = 0; i < series.length; i++) {
+            const h = Math.round((series[i] - min) * chunks)
+            const y = 500 - h
+            console.log(h, y)
+
+            ctx.beginPath()
+            ctx.lineWidth = '1'
+            ctx.strokeStyle = 'black'
+            ctx.fillStyle = 'red'
+            ctx.arc(i * 20 + 10 + xAxisSpacing * i, y, 5, 0, 2 * Math.PI)
+            ctx.fill()
+            ctx.stroke()
+        }
+    }
+
+    // onMount(() => {
+    //     let series = [100, 150, 20, 40, 120, 5, 96, 85, 43]
+
+    // })
 
     let options = [
         {
@@ -86,6 +130,7 @@
             )
             const data = await result.json()
             const { series, days } = data
+            drawGraph(series[0][0].close)
             history = [...history, ...series]
             maxNumberOfDays = days
         } catch (err) {
@@ -110,7 +155,7 @@
             <h1 class="text-4xl leading-relaxed">COVID-19 vs Markets</h1>
         </header>
 
-        <input
+        <!-- <input
             type="text"
             class="text-black"
             bind:value={currentStock}
@@ -141,9 +186,13 @@
                     min="0"
                     max={maxNumberOfDays - 1}
                     bind:value={currentDay} />
-                <p>Current date: {history[0][0].time[currentDay]}</p>
+                <p>
+                    Current date: {new Date(history[0][0].time[currentDay] * 1000).toISOString()}
+                </p>
                 <p>Market trading days since COVID-19: {currentDay}</p>
             </section>
-        {/if}
+        {/if} -->
+
+        <canvas bind:this={canvas} width={800} height={500} />
     </section>
 </section>
