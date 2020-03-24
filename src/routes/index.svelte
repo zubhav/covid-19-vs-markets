@@ -28,13 +28,12 @@
         for (let i = 0; i < series.length; i++) {
             const h = Math.round((series[i] - min) * chunks)
             const y = 500 - h
-            console.log(h, y)
 
             ctx.beginPath()
             ctx.lineWidth = '1'
             ctx.strokeStyle = 'black'
             ctx.fillStyle = 'red'
-            ctx.arc(i * 20 + 10 + xAxisSpacing * i, y, 5, 0, 2 * Math.PI)
+            ctx.arc(i * xAxisSpacing, y, 5, 0, 2 * Math.PI)
             ctx.fill()
             ctx.stroke()
         }
