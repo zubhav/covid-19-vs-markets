@@ -3,31 +3,30 @@
     import { fetchFromApi } from '../utils/fetchFromApi'
 
     let canvas
+    let chartWidth = 800
+    let chartHeight = 500
 
     function drawGraph(series) {
-        // series = [100, 150, 20, 40, 120, 5, 96, 85, 43]
-        console.log(series)
-
         const ctx = canvas.getContext('2d')
-        ctx.beginPath()
 
+        ctx.beginPath()
         ctx.lineWidth = '3'
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'white'
-        ctx.rect(0, 0, 800, 500)
-        ctx.fillRect(0, 0, 800, 500)
+        ctx.rect(0, 0, chartWidth, chartHeight)
+        ctx.fillRect(0, 0, chartWidth, chartHeight)
         ctx.stroke()
 
-        let xAxisSpacing = Math.round(800 / series.length)
+        let xAxisSpacing = Math.round(chartWidth / series.length)
 
         let min = Math.min(...series)
         let max = Math.max(...series)
         let minMaxGap = max - min
-        let chunks = 500 / minMaxGap
+        let chunks = chartHeight / minMaxGap
 
         for (let i = 0; i < series.length; i++) {
-            const h = Math.round((series[i] - min) * chunks)
-            const y = 500 - h
+            const h = (series[i] - min) * chunks
+            const y = chartHeight - h
 
             ctx.beginPath()
             ctx.lineWidth = '1'
@@ -192,6 +191,6 @@
             </section>
         {/if} -->
 
-        <canvas bind:this={canvas} width={800} height={500} />
+        <canvas bind:this={canvas} width={chartWidth} height={chartHeight} />
     </section>
 </section>
