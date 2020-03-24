@@ -5,7 +5,7 @@
     let canvas
 
     function drawGraph(series) {
-        // let series = [100, 150, 20, 40, 120, 5, 96, 85, 43]
+        // series = [100, 150, 20, 40, 120, 5, 96, 85, 43]
         console.log(series)
 
         const ctx = canvas.getContext('2d')
@@ -20,8 +20,8 @@
 
         let xAxisSpacing = Math.round(800 / series.length)
 
-        let min = 226.0
-        let max = 338.34
+        let min = Math.min(...series)
+        let max = Math.max(...series)
         let minMaxGap = max - min
         let chunks = 500 / minMaxGap
 
