@@ -1,5 +1,69 @@
 <script>
+    import { onMount } from 'svelte'
     import { fetchFromApi } from '../utils/fetchFromApi'
+
+    let canvas
+    let chartWidth = 800
+    let chartHeight = 500
+    let xOffset = 10
+    let yOffset = 10
+    let radius = 3
+    let startAngle = 0
+    let endAngle = 2 * Math.PI
+
+    function drawCanvas() {
+        const ctx = canvas.getContext('2d')
+
+        ctx.beginPath()
+        ctx.lineWidth = '3'
+        ctx.strokeStyle = 'black'
+        ctx.fillStyle = 'white'
+        ctx.rect(0, 0, chartWidth, chartHeight)
+        ctx.fillRect(0, 0, chartWidth, chartHeight)
+        ctx.stroke()
+    }
+
+    function drawGraph(history) {
+        const ctx = canvas.getContext('2d')
+        ctx.clearRect(0, 0, chartWidth, chartHeight)
+        drawCanvas()
+
+        const allValues = history
+            .flat()
+            .map(data => data.close)
+            .flat()
+        let minYValue = Math.min(...allValues)
+        let maxYValue = Math.max(...allValues)
+
+        const colours = ['red', 'blue', 'green']
+        for (const [index, item] of history.entries()) {
+            const series = item[0].close.slice(0, currentDay)
+
+            let yRange = maxYValue - minYValue
+            let ySpacing = (chartHeight - yOffset) / yRange
+            let xSpacing = (chartWidth - xOffset) / series.length
+
+            for (const [i, value] of series.entries()) {
+                const yCalc = (value - minYValue) * ySpacing
+                const yPos = chartHeight - yCalc - yOffset / 2
+                const xCalc = i * xSpacing
+                const xPos = xCalc + xOffset
+
+                ctx.beginPath()
+                ctx.lineWidth = '1'
+                ctx.strokeStyle = 'black'
+                ctx.fillStyle = colours[index]
+                ctx.arc(xPos, yPos, radius, startAngle, endAngle)
+                ctx.fill()
+                ctx.stroke()
+            }
+        }
+    }
+
+    onMount(() => {
+        drawCanvas()
+        // fetchAndPopulateStockData(options)
+    })
 
     let options = [
         {
@@ -95,7 +159,11 @@
     }
 
     $: {
-        fetchAndPopulateStockData(options)
+        currentDay, history.length > 0 && drawGraph(history)
+    }
+
+    $: {
+        options && fetchAndPopulateStockData(options)
     }
 </script>
 
@@ -141,9 +209,13 @@
                     min="0"
                     max={maxNumberOfDays - 1}
                     bind:value={currentDay} />
-                <p>Current date: {history[0][0].time[currentDay]}</p>
+                <p>
+                    Current date: {new Date(history[0][0].time[currentDay] * 1000).toISOString()}
+                </p>
                 <p>Market trading days since COVID-19: {currentDay}</p>
             </section>
         {/if}
+
+        <canvas bind:this={canvas} width={chartWidth} height={chartHeight} />
     </section>
 </section>
