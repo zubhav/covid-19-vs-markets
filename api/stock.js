@@ -1,9 +1,8 @@
 import fetch from 'node-fetch'
 require('dotenv').config()
 
-const getTimestampFromDateStr = (dt) => {
+const getTimestampFromDateStr = (dt) =>
     Math.floor(new Date(dt).getTime() / 1000)
-}
 
 export default async (request, response) => {
     const API_ENDPOINT = 'https://finnhub.io/api/v1/stock/candle'
