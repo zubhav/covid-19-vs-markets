@@ -35,9 +35,9 @@
         let minYValue = Math.min(...allValues)
         let maxYValue = Math.max(...allValues)
 
-        const colours = ['red', 'blue', 'green']
+        const colours = ['red', 'blue', 'green', 'orange']
         for (const [index, item] of history.entries()) {
-            const series = item[0].close.slice(0, currentDay)
+            const series = item.close.slice(0, currentDay)
 
             let yRange = maxYValue - minYValue
             let ySpacing = (chartHeight - yOffset) / yRange
@@ -171,9 +171,8 @@
     <title>COVID-19 vs Markets</title>
 </svelte:head>
 
-<section class="text-center flex h-screen">
+<section class="text-center flex">
     <section class="m-auto">
-
         <header class="font-bold">
             <h1 class="text-4xl leading-relaxed">COVID-19 vs Markets</h1>
         </header>
@@ -188,14 +187,12 @@
             <p>Loading...</p>
         {:else}
             <ul>
-                {#each history as symbol}
-                    {#each symbol as item (item.symbol)}
-                        <li>
-                            <p>{item.symbol}</p>
-                            <p>Opened at: {item.open[currentDay]}</p>
-                            <p>Closed at: {item.close[currentDay]}</p>
-                        </li>
-                    {/each}
+                {#each history as item}
+                    <li>
+                        <p>{item.symbol}</p>
+                        <p>Opened at: {item.open[currentDay]}</p>
+                        <p>Closed at: {item.close[currentDay]}</p>
+                    </li>
                     <li class="h-4" />
                 {/each}
             </ul>
@@ -210,7 +207,7 @@
                     max={maxNumberOfDays - 1}
                     bind:value={currentDay} />
                 <p>
-                    Current date: {new Date(history[0][0].time[currentDay] * 1000).toISOString()}
+                    Current date: {new Date(history[0].time[currentDay] * 1000).toISOString()}
                 </p>
                 <p>Market trading days since COVID-19: {currentDay}</p>
             </section>

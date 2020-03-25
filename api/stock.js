@@ -7,7 +7,7 @@ const getTimestampFromDateStr = (dt) => {
 
 export default async (request, response) => {
     const API_ENDPOINT = 'https://finnhub.io/api/v1/stock/candle'
-    const symbolList = request.query.symbolList.split(',')
+    const symbolList = request.query.symbols.split(',')
 
     if (symbolList && symbolList.length > 0) {
         const API_KEY = process.env.FINNHUB_API_KEY
