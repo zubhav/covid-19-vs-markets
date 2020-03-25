@@ -23,7 +23,7 @@ export default async (request, response) => {
         const results = await Promise.all(promises)
 
         let data = []
-        let dates = new Set()
+        let dates
 
         results.map((res, idx) => {
             const { c, o, h, l, t, s } = res
@@ -38,11 +38,13 @@ export default async (request, response) => {
                     symbol,
                 })
 
-                dates.add(t)
+                if (idx === results.length) {
+                    dates = t
+                }
             }
         })
 
-        response.status(200).json({ series: data, labels: Array.from(dates) })
+        response.status(200).json({ series: data, labels: dates })
     }
 
     response.status(400)
