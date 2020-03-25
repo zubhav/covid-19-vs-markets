@@ -21,23 +21,21 @@ export default async (request, response) => {
         })
 
         const results = await Promise.all(promises)
-        const data = []
+        let data = []
 
         results.map((res, idx) => {
             const { c, o, h, l, t, s } = res
             const symbol = symbols[idx]
 
             if (s !== 'no_data') {
-                data.push([
-                    {
-                        close: c,
-                        open: o,
-                        high: h,
-                        low: l,
-                        time: t,
-                        symbol,
-                    },
-                ])
+                data.push({
+                    close: c,
+                    open: o,
+                    high: h,
+                    low: l,
+                    time: t,
+                    symbol,
+                })
 
                 numberOfDays = t.length
             }
