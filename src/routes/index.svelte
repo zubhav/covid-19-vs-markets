@@ -5,8 +5,13 @@
     let canvas
     let chartWidth = 800
     let chartHeight = 500
+    let xOffset = 10
+    let yOffset = 10
+    let radius = 3
+    let startAngle = 0
+    let endAngle = 2 * Math.PI
 
-    function drawGraph(series) {
+    function drawCanvas() {
         const ctx = canvas.getContext('2d')
 
         ctx.beginPath()
@@ -16,32 +21,49 @@
         ctx.rect(0, 0, chartWidth, chartHeight)
         ctx.fillRect(0, 0, chartWidth, chartHeight)
         ctx.stroke()
+    }
 
-        let xAxisSpacing = Math.round(chartWidth / series.length)
+    function drawGraph(history) {
+        const ctx = canvas.getContext('2d')
+        ctx.clearRect(0, 0, chartWidth, chartHeight)
+        drawCanvas()
 
-        let min = Math.min(...series)
-        let max = Math.max(...series)
-        let minMaxGap = max - min
-        let chunks = chartHeight / minMaxGap
+        const allValues = history
+            .flat()
+            .map(data => data.close)
+            .flat()
+        let minYValue = Math.min(...allValues)
+        let maxYValue = Math.max(...allValues)
 
-        for (let i = 0; i < series.length; i++) {
-            const h = (series[i] - min) * chunks
-            const y = chartHeight - h
+        const colours = ['red', 'blue', 'green']
+        for (const [index, item] of history.entries()) {
+            const series = item[0].close.slice(0, currentDay)
 
-            ctx.beginPath()
-            ctx.lineWidth = '1'
-            ctx.strokeStyle = 'black'
-            ctx.fillStyle = 'red'
-            ctx.arc(i * xAxisSpacing, y, 5, 0, 2 * Math.PI)
-            ctx.fill()
-            ctx.stroke()
+            let yRange = maxYValue - minYValue
+            let ySpacing = (chartHeight - yOffset) / yRange
+            let xSpacing = (chartWidth - xOffset) / series.length
+
+            for (const [i, value] of series.entries()) {
+                const yCalc = (value - minYValue) * ySpacing
+                const yPos = chartHeight - yCalc - yOffset / 2
+                const xCalc = i * xSpacing
+                const xPos = xCalc + xOffset
+
+                ctx.beginPath()
+                ctx.lineWidth = '1'
+                ctx.strokeStyle = 'black'
+                ctx.fillStyle = colours[index]
+                ctx.arc(xPos, yPos, radius, startAngle, endAngle)
+                ctx.fill()
+                ctx.stroke()
+            }
         }
     }
 
-    // onMount(() => {
-    //     let series = [100, 150, 20, 40, 120, 5, 96, 85, 43]
-
-    // })
+    onMount(() => {
+        drawCanvas()
+        // fetchAndPopulateStockData(options)
+    })
 
     let options = [
         {
@@ -128,7 +150,6 @@
             )
             const data = await result.json()
             const { series, days } = data
-            drawGraph(series[0][0].close)
             history = [...history, ...series]
             maxNumberOfDays = days
         } catch (err) {
@@ -138,7 +159,11 @@
     }
 
     $: {
-        fetchAndPopulateStockData(options)
+        currentDay, history.length > 0 && drawGraph(history)
+    }
+
+    $: {
+        options && fetchAndPopulateStockData(options)
     }
 </script>
 
@@ -153,7 +178,7 @@
             <h1 class="text-4xl leading-relaxed">COVID-19 vs Markets</h1>
         </header>
 
-        <!-- <input
+        <input
             type="text"
             class="text-black"
             bind:value={currentStock}
@@ -189,7 +214,7 @@
                 </p>
                 <p>Market trading days since COVID-19: {currentDay}</p>
             </section>
-        {/if} -->
+        {/if}
 
         <canvas bind:this={canvas} width={chartWidth} height={chartHeight} />
     </section>
