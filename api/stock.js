@@ -44,7 +44,7 @@ export default async (request, response) => {
             }
         })
 
-        response.status(200).json({ series: data, labels: dates })
+        response.status(200).json({ series: data, labels: Array.from(dates) })
     }
 
     response.status(400)
