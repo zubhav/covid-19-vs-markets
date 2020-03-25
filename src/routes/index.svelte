@@ -77,10 +77,10 @@
     ]
 
     let history = []
+    let dates = []
 
     let currentDay = 0
     let currentStock = ''
-    let maxNumberOfDays
 
     async function fetchSymbol(symbolQuery) {
         try {
@@ -149,9 +149,12 @@
                 `/api/stock?symbols=${stocksQuery}`
             )
             const data = await result.json()
-            const { series, days } = data
+            const { series, labels } = data
             history = [...history, ...series]
-            maxNumberOfDays = days
+
+            if (labels.length !== dates.length) {
+                dates = labels
+            }
         } catch (err) {
             console.info('Error fetching stock data', stocks)
             console.info(err)
@@ -198,16 +201,16 @@
             </ul>
         {/if}
 
-        {#if history.length !== 0}
+        {#if dates.length !== 0}
             <section>
                 <p>Slide below to show market prices since COVID-19 started</p>
                 <input
                     type="range"
                     min="0"
-                    max={maxNumberOfDays - 1}
+                    max={dates.length - 1}
                     bind:value={currentDay} />
                 <p>
-                    Current date: {new Date(history[0].time[currentDay] * 1000).toISOString()}
+                    Current date: {new Date(dates[currentDay] * 1000).toISOString()}
                 </p>
                 <p>Market trading days since COVID-19: {currentDay}</p>
             </section>

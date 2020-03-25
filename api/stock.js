@@ -38,7 +38,7 @@ export default async (request, response) => {
                     symbol,
                 })
 
-                if (idx === results.length) {
+                if (idx === results.length - 1) {
                     dates = t
                 }
             }
