@@ -20,7 +20,6 @@
 
     onMount(() => {
         drawCanvas()
-        drawGraph(series)
     })
 
     function drawCanvas() {
@@ -66,9 +65,9 @@
         }
     }
 
-    // $: {
-    //     series.length > 0 && drawGraph(series)
-    // }
+    $: {
+        series.length > 0 && drawGraph(series)
+    }
 </script>
 
 <style>
