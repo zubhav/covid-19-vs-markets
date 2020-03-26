@@ -8,7 +8,7 @@
     export let width
 
     export let series
-    // export let labels
+    export let labels
 
     let xOffset = 10
     let yOffset = 10
@@ -48,25 +48,31 @@
             let xSpacing = (width - xOffset) / item.length
 
             for (const [i, value] of item.entries()) {
-                const yCalc = (value - minYValue) * ySpacing
-                const yPos = height - yCalc - yOffset / 2
+                if (value) {
+                    const xCalc = i * xSpacing
+                    const xPos = xCalc + xOffset
 
-                const xCalc = i * xSpacing
-                const xPos = xCalc + xOffset
+                    const yCalc = (value - minYValue) * ySpacing
+                    const yPos = height - yCalc - yOffset / 2
 
-                ctx.beginPath()
-                ctx.lineWidth = '1'
-                ctx.strokeStyle = 'black'
-                ctx.fillStyle = colours[index]
-                ctx.arc(xPos, yPos, radius, startAngle, endAngle)
-                ctx.fill()
-                ctx.stroke()
+                    ctx.beginPath()
+                    ctx.lineWidth = '1'
+                    ctx.strokeStyle = 'black'
+                    ctx.fillStyle = colours[index]
+                    ctx.arc(xPos, yPos, radius, startAngle, endAngle)
+                    ctx.fill()
+                    ctx.stroke()
+                }
             }
+        }
+
+        for (const [index, label] of labels.entries()) {
+            console.log(label)
         }
     }
 
     $: {
-        series.length > 0 && drawGraph(series)
+        series.length > 0, labels.length > 0 && drawGraph(series)
     }
 </script>
 

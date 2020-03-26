@@ -6,11 +6,6 @@
     let chartWidth = 800
     let chartHeight = 500
 
-    onMount(() => {
-        // drawCanvas()
-        // fetchAndPopulateStockData(options)
-    })
-
     let defaultOptions = [
         {
             title: 'S&P 500',
@@ -22,20 +17,45 @@
         },
     ]
 
-    let dates = []
-    let valueSet = []
     let history = new Map()
+    let dates = []
+    let labels = []
+    let seriesList = []
+
     let currentDay = 0
     let currentStock = ''
 
-    function getChartSeries(stockData) {
-        valueSet = []
+    onMount(() => {
+        fetchStockData(defaultOptions)
+    })
+
+    const getNewSymbols = (stocks, history) => {
+        return stocks.filter(stock => !history.get(stock))
+    }
+
+    const getDateFromTimestamp = timestamp => {
+        return new Date(timestamp * 1000).toISOString()
+    }
+
+    const updateSeries = stockData => {
+        seriesList = []
+
+        const valuesToSlice = currentDay + 1
+
         for (let value of stockData.values()) {
-            valueSet = [...valueSet, value.close.slice(0, currentDay + 1)]
+            const remainingToFill = value.close.length - currentDay - 1
+
+            seriesList = [
+                ...seriesList,
+                [
+                    ...value.close.slice(0, valuesToSlice),
+                    ...Array(remainingToFill).fill(null),
+                ],
+            ]
         }
     }
 
-    async function fetchSymbol(symbolQuery) {
+    const fetchSymbol = async symbolQuery => {
         try {
             const result = await fetchFromApi(`/api/symbols/${symbolQuery}`)
             const data = await result.json()
@@ -59,7 +79,7 @@
                     const result = await fetchSymbol(input)
 
                     if (result) {
-                        await fetchAndPopulateStockData([result])
+                        await fetchStockData([result])
                     } else {
                         alert(`Stock not found: ${input}`)
                     }
@@ -75,11 +95,7 @@
         }
     }
 
-    function getNewSymbols(entries, hist) {
-        return entries.filter(stock => !hist.get(stock))
-    }
-
-    async function fetchAndPopulateStockData(options) {
+    const fetchStockData = async options => {
         const stocks = options.map(({ symbol }) => symbol)
         const newEntries = getNewSymbols(stocks, history)
         const stocksQuery = newEntries.join(',')
@@ -109,11 +125,11 @@
     }
 
     $: {
-        defaultOptions.length > 0 && fetchAndPopulateStockData(defaultOptions)
+        currentDay, history.size > 0 && updateSeries(history)
     }
 
     $: {
-        currentDay, history.size > 0 && getChartSeries(history)
+        labels = dates.map(date => getDateFromTimestamp(date))
     }
 </script>
 
@@ -156,13 +172,15 @@
                     min="0"
                     max={dates.length - 1}
                     bind:value={currentDay} />
-                <p>
-                    Current date: {new Date(dates[currentDay] * 1000).toISOString()}
-                </p>
+                <p>Current date: {getDateFromTimestamp(dates[currentDay])}</p>
                 <p>Market trading days since COVID-19: {currentDay}</p>
             </section>
         {/if}
 
-        <Chart width={chartWidth} height={chartHeight} series={valueSet} />
+        <Chart
+            width={chartWidth}
+            height={chartHeight}
+            series={seriesList}
+            {labels} />
     </section>
 </section>
