@@ -11,7 +11,7 @@
         // fetchAndPopulateStockData(options)
     })
 
-    let options = [
+    let defaultOptions = [
         {
             title: 'S&P 500',
             symbol: 'SPY',
@@ -22,16 +22,16 @@
         },
     ]
 
-    let history = []
     let dates = []
     let valueSet = []
-
+    let history = new Map()
     let currentDay = 0
     let currentStock = ''
 
-    function getChartSeries(history) {
-        for (let i = 0; i < history.length; i++) {
-            valueSet[i] = history[i].close.slice(0, currentDay + 1)
+    function getChartSeries(stockData) {
+        valueSet = []
+        for (let value of stockData.values()) {
+            valueSet = [...valueSet, value.close.slice(0, currentDay + 1)]
         }
     }
 
@@ -48,25 +48,18 @@
     }
 
     const handleSearchAndAddStock = async event => {
-        const input = currentStock
-            .trim()
-            .replace('$', '')
-            .toUpperCase()
-        const alreadyExists = options.find(option => option.symbol === input)
-
         if (event.keyCode === 13) {
+            const input = currentStock
+                .trim()
+                .replace('$', '')
+                .toUpperCase()
+            const alreadyExists = history.has(input)
             if (input.length > 0 && input.length <= 5) {
                 if (!alreadyExists) {
                     const result = await fetchSymbol(input)
 
                     if (result) {
-                        options = [
-                            ...options,
-                            {
-                                title: result.title,
-                                symbol: result.symbol,
-                            },
-                        ]
+                        await fetchAndPopulateStockData([result])
                     } else {
                         alert(`Stock not found: ${input}`)
                     }
@@ -83,11 +76,7 @@
     }
 
     function getNewSymbols(entries, hist) {
-        return entries.filter(stock => {
-            return !hist.find(({ symbol }) => {
-                return stock === symbol
-            })
-        })
+        return entries.filter(stock => !hist.get(stock))
     }
 
     async function fetchAndPopulateStockData(options) {
@@ -101,7 +90,14 @@
             )
             const data = await result.json()
             const { series, labels } = data
-            history = [...history, ...series]
+
+            for (let { symbol, open, close } of series) {
+                history = history.set(symbol, {
+                    symbol: symbol,
+                    open: open,
+                    close: close,
+                })
+            }
 
             if (labels.length !== dates.length) {
                 dates = labels
@@ -113,11 +109,11 @@
     }
 
     $: {
-        options && fetchAndPopulateStockData(options)
+        defaultOptions.length > 0 && fetchAndPopulateStockData(defaultOptions)
     }
 
     $: {
-        currentDay, history.length > 0 && getChartSeries(history)
+        currentDay, history.size > 0 && getChartSeries(history)
     }
 </script>
 
@@ -137,11 +133,11 @@
             bind:value={currentStock}
             on:keyup={handleSearchAndAddStock} />
 
-        {#if history.length === 0}
+        {#if history.size === 0}
             <p>Loading...</p>
         {:else}
             <ul>
-                {#each history as item}
+                {#each Array.from(history.values()) as item}
                     <li>
                         <p>{item.symbol}</p>
                         <p>Opened at: {item.open[currentDay]}</p>
