@@ -17,7 +17,7 @@
     let startAngle = 0
     let endAngle = 2 * Math.PI
 
-    let colours = ['red', 'blue', 'green', 'orange']
+    let LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
     onMount(() => {
         drawCanvas()
@@ -26,7 +26,7 @@
     function drawCanvas() {
         ctx = canvas.getContext('2d')
         ctx.beginPath()
-        ctx.lineWidth = '3'
+        ctx.lineWidth = 2
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'white'
         ctx.rect(0, 0, width, height)
@@ -65,6 +65,8 @@
                 ctx.beginPath()
                 ctx.moveTo(xPos, yPos)
                 ctx.lineTo(xPos2, yPos2)
+                ctx.lineWidth = 2
+                ctx.strokeStyle = LINE_COLORS[i]
                 ctx.stroke()
             }
         }

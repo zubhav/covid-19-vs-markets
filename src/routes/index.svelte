@@ -8,12 +8,16 @@
 
     let defaultOptions = [
         {
-            title: 'S&P 500',
-            symbol: 'SPY',
+            symbol: 'DHY',
         },
         {
-            title: 'Dow Jones Industrial Average',
-            symbol: 'DHY',
+            symbol: 'BLE',
+        },
+        {
+            symbol: 'JPM',
+        },
+        {
+            symbol: 'SPY',
         },
     ]
 
@@ -147,10 +151,13 @@
             type="text"
             class="text-black"
             placeholder="Add a symbol..."
+            disabled={history.size >= 4}
             bind:value={currentStock}
             on:keyup={handleSearchAndAddStock} />
 
-        <button on:click={() => addNewSymbol(currentStock)}>&plus;</button>
+        {#if history.size < 4}
+            <button on:click={() => addNewSymbol(currentStock)}>&plus;</button>
+        {/if}
 
         {#if history.size === 0}
             <p>Loading...</p>
