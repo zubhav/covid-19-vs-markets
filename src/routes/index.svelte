@@ -18,6 +18,7 @@
     ]
 
     let history = new Map()
+
     let dates = []
     let labels = []
     let seriesList = []
@@ -37,12 +38,12 @@
         return new Date(timestamp * 1000).toISOString()
     }
 
-    const updateSeries = stockData => {
+    const updateSeries = history => {
         seriesList = []
 
         const valuesToSlice = currentDay + 1
 
-        for (let value of stockData.values()) {
+        for (let value of history.values()) {
             const remainingToFill = value.close.length - currentDay - 1
 
             seriesList = [
@@ -67,6 +68,21 @@
         }
     }
 
+    const deleteSymbol = symbol => {
+        history.delete(symbol)
+        history = history
+    }
+
+    const addNewSymbol = async symbol => {
+        const result = await fetchSymbol(symbol)
+
+        if (result) {
+            return fetchStockData([result])
+        } else {
+            alert(`Stock not found: ${symbol}`)
+        }
+    }
+
     const handleSearchAndAddStock = async event => {
         if (event.keyCode === 13) {
             const input = currentStock
@@ -76,13 +92,7 @@
             const alreadyExists = history.has(input)
             if (input.length > 0 && input.length <= 5) {
                 if (!alreadyExists) {
-                    const result = await fetchSymbol(input)
-
-                    if (result) {
-                        await fetchStockData([result])
-                    } else {
-                        alert(`Stock not found: ${input}`)
-                    }
+                    await addNewSymbol(input)
                 } else {
                     alert(`Stock already selected: ${input}`)
                 }
@@ -125,7 +135,7 @@
     }
 
     $: {
-        currentDay, history.size > 0 && updateSeries(history)
+        currentDay, history && updateSeries(history)
     }
 
     $: {
@@ -146,18 +156,24 @@
         <input
             type="text"
             class="text-black"
+            placeholder="Add a symbol..."
             bind:value={currentStock}
             on:keyup={handleSearchAndAddStock} />
+
+        <button on:click={() => addNewSymbol(currentStock)}>&plus;</button>
 
         {#if history.size === 0}
             <p>Loading...</p>
         {:else}
             <ul>
-                {#each Array.from(history.values()) as item}
+                {#each Array.from(history.values()) as item (item.symbol)}
                     <li>
                         <p>{item.symbol}</p>
                         <p>Opened at: {item.open[currentDay]}</p>
                         <p>Closed at: {item.close[currentDay]}</p>
+                        <button on:click|once={() => deleteSymbol(item.symbol)}>
+                            &times;
+                        </button>
                     </li>
                     <li class="h-4" />
                 {/each}
@@ -173,7 +189,7 @@
                     max={dates.length - 1}
                     bind:value={currentDay} />
                 <p>Current date: {getDateFromTimestamp(dates[currentDay])}</p>
-                <p>Market trading days since COVID-19: {currentDay}</p>
+                <p>Market trading days since COVID-19: {currentDay + 1}</p>
             </section>
         {/if}
 
