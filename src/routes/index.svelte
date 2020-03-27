@@ -41,18 +41,8 @@
     const updateSeries = history => {
         seriesList = []
 
-        const valuesToSlice = currentDay + 1
-
         for (let value of history.values()) {
-            const remainingToFill = value.close.length - currentDay - 1
-
-            seriesList = [
-                ...seriesList,
-                [
-                    ...value.close.slice(0, valuesToSlice),
-                    ...Array(remainingToFill).fill(null),
-                ],
-            ]
+            seriesList = [...seriesList, [...value.close]]
         }
     }
 
@@ -197,6 +187,7 @@
             width={chartWidth}
             height={chartHeight}
             series={seriesList}
+            stopValuesAt={currentDay}
             {labels} />
     </section>
 </section>
