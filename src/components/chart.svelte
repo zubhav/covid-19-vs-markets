@@ -39,7 +39,7 @@
         drawCanvas()
 
         const allValues = valueSet.flat()
-        let minYValue = Math.min(...allValues)
+        let minYValue = Math.min(...allValues.filter(value => value !== null))
         let maxYValue = Math.max(...allValues)
 
         for (const [i, item] of valueSet.entries()) {
@@ -55,16 +55,16 @@
                     const yCalc = (value - minYValue) * ySpacing
                     const yPos = height - yCalc - Y_OFFSET / 2
 
-                    if (item[j - 1]) {
-                        const xCalc2 = (j - 1) * xSpacing
+                    if (item[j + 1]) {
+                        const xCalc2 = (j + 1) * xSpacing
                         const xPos2 = xCalc2 + X_OFFSET
 
-                        const yCalc2 = (item[j - 1] - minYValue) * ySpacing
+                        const yCalc2 = (item[j + 1] - minYValue) * ySpacing
                         const yPos2 = height - yCalc2 - Y_OFFSET / 2
 
                         ctx.beginPath()
-                        ctx.moveTo(xPos2, yPos2)
-                        ctx.lineTo(xPos, yPos)
+                        ctx.moveTo(xPos, yPos)
+                        ctx.lineTo(xPos2, yPos2)
                         ctx.stroke()
                     }
                 }
