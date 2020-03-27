@@ -68,40 +68,40 @@
         }
     }
 
+    const addNewSymbol = async input => {
+        const symbol = currentStock
+            .trim()
+            .replace('$', '')
+            .toUpperCase()
+
+        if (symbol.length > 0 && symbol.length <= 5) {
+            const alreadyExists = history.has(symbol)
+            if (!alreadyExists) {
+                const result = await fetchSymbol(symbol)
+                if (result) {
+                    await fetchStockData([result])
+                } else {
+                    alert(`Stock not found: ${symbol}`)
+                }
+            } else {
+                alert(`Stock already selected: ${symbol}`)
+            }
+        } else {
+            alert(
+                `Symbol should be between 1-5 characters excluding $: ${symbol}`
+            )
+        }
+        currentStock = ''
+    }
+
     const deleteSymbol = symbol => {
         history.delete(symbol)
         history = history
     }
 
-    const addNewSymbol = async symbol => {
-        const result = await fetchSymbol(symbol)
-
-        if (result) {
-            return fetchStockData([result])
-        } else {
-            alert(`Stock not found: ${symbol}`)
-        }
-    }
-
     const handleSearchAndAddStock = async event => {
         if (event.keyCode === 13) {
-            const input = currentStock
-                .trim()
-                .replace('$', '')
-                .toUpperCase()
-            const alreadyExists = history.has(input)
-            if (input.length > 0 && input.length <= 5) {
-                if (!alreadyExists) {
-                    await addNewSymbol(input)
-                } else {
-                    alert(`Stock already selected: ${input}`)
-                }
-            } else {
-                alert(
-                    `Symbol should be between 1-5 characters excluding $: ${input}`
-                )
-            }
-            currentStock = ''
+            await addNewSymbol(currentStock)
         }
     }
 
