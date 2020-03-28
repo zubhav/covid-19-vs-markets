@@ -23,6 +23,18 @@
 
     const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
+    let priceSelected = 'close'
+    const candleAttributes = [
+        {
+            label: 'Opened',
+            value: 'open',
+        },
+        {
+            label: 'Closed',
+            value: 'close',
+        },
+    ]
+
     let history = new Map()
 
     let dates = []
@@ -52,9 +64,9 @@
 
     const updateSeries = history => {
         seriesList = []
-
         for (let value of history.values()) {
-            seriesList = [...seriesList, [...value.close]]
+            let prices = priceSelected === 'open' ? value.open : value.close
+            seriesList = [...seriesList, [...prices]]
         }
     }
 
@@ -143,7 +155,7 @@
     }
 
     $: {
-        currentDay, history && updateSeries(history)
+        currentDay, history, priceSelected && updateSeries(history)
     }
 
     $: {
@@ -232,6 +244,16 @@
                             </p>
                         </li>
                         <li class="h-4" />
+                    {/each}
+                    {#each candleAttributes as candleAttribute}
+                        <label>
+                            <input
+                                type="radio"
+                                bind:group={priceSelected}
+                                checked={candleAttribute.value === priceSelected}
+                                value={candleAttribute.value} />
+                            {candleAttribute.label}
+                        </label>
                     {/each}
                 </ul>
             {/if}
