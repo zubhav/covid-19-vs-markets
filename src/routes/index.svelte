@@ -227,8 +227,7 @@
                     {#each Array(4 - history.size) as _}
                         <li class="bg-gray-300 flex items-center p-2 h-32">
                             <p
-                                class="text-center text-6xl text-gray-600 w-full
-                                ">
+                                class="text-center text-6xl text-gray-600 w-full">
                                 ?
                             </p>
                         </li>
