@@ -38,8 +38,14 @@
         return stocks.filter(stock => !history.get(stock))
     }
 
+    const padZero = num => (num < 10 ? `0${num}` : `${num}`)
+
     const getDateFromTimestamp = timestamp => {
-        return new Date(timestamp * 1000).toISOString()
+        const dateObj = new Date(timestamp * 1000)
+        const year = dateObj.getFullYear()
+        const month = padZero(dateObj.getMonth() + 1)
+        const day = padZero(dateObj.getDate())
+        return `${day}/${month}/${year}`
     }
 
     const updateSeries = history => {
@@ -111,11 +117,13 @@
             const data = await result.json()
             const { series, labels } = data
 
-            for (let { symbol, open, close } of series) {
+            for (let { symbol, open, close, high, low } of series) {
                 history = history.set(symbol, {
                     symbol: symbol,
                     open: open,
                     close: close,
+                    high: high,
+                    low: low,
                 })
             }
 
@@ -128,8 +136,16 @@
         }
     }
 
+    const updateCurrentDay = newDay => {
+        currentDay = newDay
+    }
+
     $: {
         currentDay, history && updateSeries(history)
+    }
+
+    $: {
+        dates.length > 0 && updateCurrentDay(dates.length - 1)
     }
 
     $: {
@@ -141,54 +157,75 @@
     <title>COVID-19 vs Markets</title>
 </svelte:head>
 
-<section class="text-center flex">
-    <section class="m-auto">
-        <header class="font-bold">
-            <h1 class="text-4xl leading-relaxed">COVID-19 vs Markets</h1>
-        </header>
-
-        <input
-            type="text"
-            class="text-black"
-            placeholder="Add a symbol..."
-            disabled={history.size >= 4}
-            bind:value={currentStock}
-            on:keyup={handleSearchAndAddStock} />
-
-        {#if history.size < 4}
-            <button on:click={() => addNewSymbol(currentStock)}>&plus;</button>
-        {/if}
-
-        {#if history.size === 0}
-            <p>Loading...</p>
-        {:else}
-            <ul>
-                {#each Array.from(history.values()) as item (item.symbol)}
-                    <li>
-                        <p>{item.symbol}</p>
-                        <p>Opened at: {item.open[currentDay]}</p>
-                        <p>Closed at: {item.close[currentDay]}</p>
-                        <button on:click|once={() => deleteSymbol(item.symbol)}>
-                            &times;
-                        </button>
-                    </li>
-                    <li class="h-4" />
-                {/each}
-            </ul>
-        {/if}
-
-        {#if dates.length !== 0}
-            <section>
-                <p>Slide below to show market prices since COVID-19 started</p>
+<section class="flex">
+    <section class="w-1/4">
+        <aside
+            class="w-full h-full border-r border-solid border-gray p-4 m-4
+            items-center justify-center">
+            <section class="flex text-gray pb-4">
+                <span class="w-6 text-center">&#36;</span>
                 <input
-                    type="range"
-                    min="0"
-                    max={dates.length - 1}
-                    bind:value={currentDay} />
-                <p>Current date: {getDateFromTimestamp(dates[currentDay])}</p>
-                <p>Market trading days since COVID-19: {currentDay + 1}</p>
+                    type="text"
+                    class="w-full border-b border-solid border-gray"
+                    placeholder="Add a new symbol..."
+                    disabled={history.size >= 4}
+                    bind:value={currentStock}
+                    on:keyup={handleSearchAndAddStock} />
+                {#if history.size < 4}
+                    <button
+                        class="w-8 border border-solid border-gray p-4"
+                        on:click={() => addNewSymbol(currentStock)}>
+                        &plus;
+                    </button>
+                {/if}
             </section>
-        {/if}
+
+            {#if history.size === 0}
+                <p>Loading...</p>
+            {:else}
+                <ul>
+                    {#each Array.from(history.values()) as item (item.symbol)}
+                        <li class="border border-solid border-black p-2">
+                            <button
+                                class="float-right"
+                                on:click|once={() => deleteSymbol(item.symbol)}>
+                                &times;
+                            </button>
+                            <section>
+                                <h3 class="text-lg">&#36;{item.symbol}</h3>
+                                <section class="text-sm">
+                                    <p>
+                                        Opened at:
+                                        <strong>{item.open[currentDay]}</strong>
+                                    </p>
+                                    <p>
+                                        Closed at:
+                                        <strong>
+                                            {item.close[currentDay]}
+                                        </strong>
+                                    </p>
+                                    <p>
+                                        Low:
+                                        <strong>{item.low[currentDay]}</strong>
+                                    </p>
+                                    <p>
+                                        High:
+                                        <strong>{item.high[currentDay]}</strong>
+                                    </p>
+                                </section>
+                            </section>
+                        </li>
+                        <li class="h-4" />
+                    {/each}
+                </ul>
+            {/if}
+
+        </aside>
+    </section>
+    <section class="w-3/4 text-center">
+        <header class="font-bold">
+            <h1 class="text-4xl py-4">COVID-19 vs. Markets</h1>
+        </header>
 
         <Chart
             width={chartWidth}
@@ -196,5 +233,29 @@
             series={seriesList}
             stopValuesAt={currentDay}
             {labels} />
+
+        {#if dates.length !== 0}
+            <section class="text-sm py-2">
+                <p>
+                    Use the slider to show the affect of COVID-19 on selected
+                    indexes
+                </p>
+
+                <p>
+                    Selected date:
+                    <strong>{getDateFromTimestamp(dates[currentDay])}</strong>
+                </p>
+                <p>
+                    Market trading days since COVID-19:
+                    <strong>{currentDay + 1}</strong>
+                </p>
+            </section>
+            <input
+                class="w-2/3"
+                type="range"
+                min="0"
+                max={dates.length - 1}
+                bind:value={currentDay} />
+        {/if}
     </section>
 </section>

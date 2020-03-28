@@ -94,8 +94,4 @@
     }
 </script>
 
-<style>
-
-</style>
-
-<canvas bind:this={canvas} {width} {height} />
+<canvas class="m-auto" bind:this={canvas} {width} {height} />
