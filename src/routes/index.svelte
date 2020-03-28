@@ -3,10 +3,10 @@
     import { fetchFromApi } from '../utils/fetchFromApi'
     import Chart from '../components/chart.svelte'
 
-    let chartWidth = 800
-    let chartHeight = 500
+    const chartWidth = 800
+    const chartHeight = 500
 
-    let defaultOptions = [
+    const DEFAULT_OPTIONS = [
         {
             symbol: 'DHY',
         },
@@ -21,6 +21,8 @@
         },
     ]
 
+    const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
+
     let history = new Map()
 
     let dates = []
@@ -31,7 +33,7 @@
     let currentStock = ''
 
     onMount(() => {
-        fetchStockData(defaultOptions)
+        fetchStockData(DEFAULT_OPTIONS)
     })
 
     const getNewSymbols = (stocks, history) => {
@@ -184,7 +186,7 @@
                 <p>Loading...</p>
             {:else}
                 <ul>
-                    {#each Array.from(history.values()) as item (item.symbol)}
+                    {#each Array.from(history.values()) as item, idx (item.symbol)}
                         <li class="border border-solid border-black p-2">
                             <button
                                 class="float-right"
@@ -192,7 +194,12 @@
                                 &times;
                             </button>
                             <section>
-                                <h3 class="text-lg">&#36;{item.symbol}</h3>
+                                <span
+                                    class="text-lg text-white tracking-wide p-1
+                                    mb-1"
+                                    style={`background-color: ${LINE_COLORS[idx]};`}>
+                                    &#36;{item.symbol}
+                                </span>
                                 <section class="text-sm">
                                     <p>
                                         Opened at:
@@ -232,7 +239,8 @@
             height={chartHeight}
             series={seriesList}
             stopValuesAt={currentDay}
-            {labels} />
+            {labels}
+            colors={LINE_COLORS} />
 
         {#if dates.length !== 0}
             <section class="text-sm py-2">
