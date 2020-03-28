@@ -23,8 +23,8 @@
 
     const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
-    let priceSelected = 'close'
-    const candleAttributes = [
+    let selectedPriceOption = 'close'
+    const PRICE_OPTIONS = [
         {
             label: 'Open',
             value: 'open',
@@ -62,10 +62,10 @@
         return `${day}/${month}/${year}`
     }
 
-    const updateSeries = history => {
+    const updateSeries = (history, priceSelected) => {
         seriesList = []
         for (let value of history.values()) {
-            let prices = priceSelected === 'open' ? value.open : value.close
+            let prices = value[priceSelected]
             seriesList = [...seriesList, [...prices]]
         }
     }
@@ -166,7 +166,7 @@
     }
 
     $: {
-        currentDay, history, priceSelected && updateSeries(history)
+        currentDay, history && updateSeries(history, selectedPriceOption)
     }
 
     $: {
@@ -274,19 +274,19 @@
                         </li>
                         <li class="h-4" />
                     {/each}
-                    <section class="flex justify-around">
-                        {#each candleAttributes as candleAttribute}
-                            <label>
-                                <input
-                                    type="radio"
-                                    bind:group={priceSelected}
-                                    checked={candleAttribute.value === priceSelected}
-                                    value={candleAttribute.value} />
-                                {`${candleAttribute.label} prices`}
-                            </label>
-                        {/each}
-                    </section>
                 </ul>
+                <section class="flex justify-around p-2">
+                    {#each PRICE_OPTIONS as options}
+                        <label>
+                            <input
+                                type="radio"
+                                bind:group={selectedPriceOption}
+                                checked={options.value === selectedPriceOption}
+                                value={options.value} />
+                            {`${options.label} prices`}
+                        </label>
+                    {/each}
+                </section>
             {/if}
 
         </aside>
