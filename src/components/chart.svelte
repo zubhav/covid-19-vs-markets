@@ -7,14 +7,13 @@
     export let height
     export let width
     export let stopValuesAt
+    export let colors
 
     export let series
     export let labels
 
     let X_OFFSET = 10
     let Y_OFFSET = 10
-
-    let LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
     onMount(() => {
         drawCanvas()
@@ -63,7 +62,7 @@
                 ctx.moveTo(xPos, yPos)
                 ctx.lineTo(xPos2, yPos2)
                 ctx.lineWidth = 2
-                ctx.strokeStyle = LINE_COLORS[i]
+                ctx.strokeStyle = colors[i]
                 ctx.stroke()
             }
         }
