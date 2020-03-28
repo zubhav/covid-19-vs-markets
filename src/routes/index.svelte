@@ -154,6 +154,17 @@
         currentDay = newDay
     }
 
+    const getColorByStockPerf = (list, index) => {
+        const curr = list[index]
+        const prev = list[index - 1]
+
+        if (prev && curr < prev) {
+            return 'red'
+        }
+
+        return 'green'
+    }
+
     $: {
         currentDay, history, priceSelected && updateSeries(history)
     }
@@ -174,24 +185,30 @@
 <section class="flex">
     <section class="w-1/4">
         <aside
-            class="w-full h-full border-r border-solid border-gray p-4 m-4
+            class="w-full h-full border-r border-solid border-gray-600 p-4 m-4
             items-center justify-center">
-            <section class="flex text-gray pb-4">
-                <span class="w-6 text-center">&#36;</span>
+            <section class="flex text-gray-600 mb-4 relative">
+                <span
+                    class="absolute top-0 left-0 h-full flex px-2 items-center
+                    justify-center border-r border-solid border-gray-600">
+                    &#36;
+                </span>
                 <input
                     type="text"
-                    class="w-full border-b border-solid border-gray"
+                    class="w-full h-10 pl-10 border border-solid border-gray-600
+                    rounded-lg placeholder-gray-600"
                     placeholder="Add a new symbol..."
                     disabled={history.size >= 4}
                     bind:value={currentStock}
                     on:keyup={handleSearchAndAddStock} />
-                {#if history.size < 4}
-                    <button
-                        class="w-8 border border-solid border-gray p-4"
-                        on:click={() => addNewSymbol(currentStock)}>
-                        &plus;
-                    </button>
-                {/if}
+                <button
+                    class="absolute right-0 top-0 h-full flex justify-center
+                    items-center text-2xl w-10 border-l border-solid
+                    border-gray-600"
+                    on:click={() => addNewSymbol(currentStock)}
+                    disabled={history.size >= 4}>
+                    &plus;
+                </button>
             </section>
 
             {#if history.size === 0}
@@ -199,7 +216,9 @@
             {:else}
                 <ul>
                     {#each Array.from(history.values()) as item, idx (item.symbol)}
-                        <li class="border border-solid border-black p-2 h-32">
+                        <li
+                            class="border border-solid border-gray-600 p-2 h-32
+                            rounded-md">
                             <button
                                 class="float-right"
                                 on:click|once={() => deleteSymbol(item.symbol)}>
@@ -208,28 +227,38 @@
                             <section>
                                 <span
                                     class="text-lg text-white tracking-wide p-1
-                                    mb-1"
+                                    mb-1 rounded-md"
                                     style={`background-color: ${LINE_COLORS[idx]};`}>
                                     &#36;{item.symbol}
                                 </span>
                                 <section class="text-sm">
                                     <p>
-                                        Opened at:
-                                        <strong>{item.open[currentDay]}</strong>
+                                        Open:
+                                        <strong
+                                            style={`color: ${getColorByStockPerf(item.open, currentDay)}`}>
+                                            {item.open[currentDay]}
+                                        </strong>
                                     </p>
                                     <p>
-                                        Closed at:
-                                        <strong>
+                                        Close:
+                                        <strong
+                                            style={`color: ${getColorByStockPerf(item.close, currentDay)}`}>
                                             {item.close[currentDay]}
                                         </strong>
                                     </p>
                                     <p>
                                         Low:
-                                        <strong>{item.low[currentDay]}</strong>
+                                        <strong
+                                            style={`color: ${getColorByStockPerf(item.low, currentDay)}`}>
+                                            {item.low[currentDay]}
+                                        </strong>
                                     </p>
                                     <p>
                                         High:
-                                        <strong>{item.high[currentDay]}</strong>
+                                        <strong
+                                            style={`color: ${getColorByStockPerf(item.high, currentDay)}`}>
+                                            {item.high[currentDay]}
+                                        </strong>
                                     </p>
                                 </section>
                             </section>
@@ -262,7 +291,7 @@
     </section>
     <section class="w-3/4 text-center">
         <header class="font-bold">
-            <h1 class="text-4xl py-4">COVID-19 vs. Markets</h1>
+            <h1 class="text-4xl py-4 text-gray-600">COVID-19 vs. Markets</h1>
         </header>
 
         <Chart
