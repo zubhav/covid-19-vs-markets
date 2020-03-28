@@ -9,7 +9,7 @@
         "now-build": "npm run export",
         "watch:tailwind": "postcss static/tailwind.css -o static/index.css -w",
         "build:tailwind": "NODE_ENV=production postcss static/tailwind.css -o static/index.css",
-        "format": "eslint src --ext .svelte,.js"
+        "format": "eslint src api --ext .svelte,.js"
     },
     "dependencies": {
         "compression": "^1.7.1",
@@ -44,7 +44,7 @@
         "tailwindcss": "^1.2.0"
     },
     "lint-staged": {
-        "src/**/*.{js,svelte}": [
+        "{api,src}/**/*.{js,svelte}": [
             "npm run format",
             "git add"
         ]
