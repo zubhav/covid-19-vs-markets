@@ -13,9 +13,6 @@
 
     let X_OFFSET = 10
     let Y_OFFSET = 10
-    let radius = 3
-    let startAngle = 0
-    let endAngle = 2 * Math.PI
 
     let LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 

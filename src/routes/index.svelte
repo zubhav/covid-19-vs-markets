@@ -69,7 +69,7 @@
     }
 
     const addNewSymbol = async input => {
-        const symbol = currentStock
+        const symbol = input
             .trim()
             .replace('$', '')
             .toUpperCase()
