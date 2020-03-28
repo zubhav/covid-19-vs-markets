@@ -33,6 +33,14 @@
             label: 'Close',
             value: 'close',
         },
+        {
+            label: 'Low',
+            value: 'low',
+        },
+        {
+            label: 'High',
+            value: 'high',
+        },
     ]
 
     let history = new Map()
@@ -178,6 +186,12 @@
     }
 </script>
 
+<style>
+    .h-36 {
+        height: 140px;
+    }
+</style>
+
 <svelte:head>
     <title>COVID-19 vs Markets</title>
 </svelte:head>
@@ -185,26 +199,27 @@
 <section class="flex">
     <section class="w-1/4">
         <aside
-            class="w-full h-full border-r border-solid border-gray-600 p-4 m-4
+            class="w-full h-full border-r border-solid border-gray-600 px-8 my-4
             items-center justify-center">
             <section class="flex text-gray-600 mb-4 relative">
                 <span
                     class="absolute top-0 left-0 h-full flex px-2 items-center
-                    justify-center border-r border-solid border-gray-600">
+                    justify-center border rounded-l-lg border-solid
+                    border-gray-600 bg-green text-white">
                     &#36;
                 </span>
                 <input
                     type="text"
                     class="w-full h-10 pl-10 border border-solid border-gray-600
-                    rounded-lg placeholder-gray-600"
+                    rounded-lg placeholder-gray-600 disabled:cursor-not-allowed"
                     placeholder="Add a new symbol..."
                     disabled={history.size >= 4}
                     bind:value={currentStock}
                     on:keyup={handleSearchAndAddStock} />
                 <button
                     class="absolute right-0 top-0 h-full flex justify-center
-                    items-center text-2xl w-10 border-l border-solid
-                    border-gray-600"
+                    items-center text-2xl w-10 border rounded-r-lg border-solid
+                    border-gray-600 bg-green text-white"
                     on:click={() => addNewSymbol(currentStock)}
                     disabled={history.size >= 4}>
                     &plus;
@@ -217,10 +232,11 @@
                 <ul>
                     {#each Array.from(history.values()) as item, idx (item.symbol)}
                         <li
-                            class="border border-solid border-gray-600 p-2 h-32
-                            rounded-md">
+                            class="border border-solid border-gray-600 p-2 h-36
+                            rounded-md relative">
                             <button
-                                class="float-right"
+                                class="absolute top-0 right-0 px-0 m-1 bg-red
+                                text-white rounded-md h-4 w-4"
                                 on:click|once={() => deleteSymbol(item.symbol)}>
                                 &times;
                             </button>
@@ -231,42 +247,34 @@
                                     style={`background-color: ${LINE_COLORS[idx]};`}>
                                     &#36;{item.symbol}
                                 </span>
-                                <section class="text-sm">
-                                    <p>
-                                        Open:
-                                        <strong
-                                            style={`color: ${getColorByStockPerf(item.open, currentDay)}`}>
-                                            {item.open[currentDay]}
-                                        </strong>
-                                    </p>
-                                    <p>
-                                        Close:
-                                        <strong
-                                            style={`color: ${getColorByStockPerf(item.close, currentDay)}`}>
-                                            {item.close[currentDay]}
-                                        </strong>
-                                    </p>
-                                    <p>
-                                        Low:
-                                        <strong
-                                            style={`color: ${getColorByStockPerf(item.low, currentDay)}`}>
-                                            {item.low[currentDay]}
-                                        </strong>
-                                    </p>
-                                    <p>
-                                        High:
-                                        <strong
-                                            style={`color: ${getColorByStockPerf(item.high, currentDay)}`}>
-                                            {item.high[currentDay]}
-                                        </strong>
-                                    </p>
+                                <section class="text-sm py-2">
+                                    <table class="table-auto w-full">
+                                        <tbody>
+                                            {#each PRICE_OPTIONS as option}
+                                                <tr>
+                                                    <td class="pr-4">
+                                                        {option.label}
+                                                        {#if option.value === selectedPriceOption}
+                                                            (selected)
+                                                        {/if}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <strong
+                                                            style={`color: ${getColorByStockPerf(item[option.value], currentDay)}`}>
+                                                            {item[option.value][currentDay]}
+                                                        </strong>
+                                                    </td>
+                                                </tr>
+                                            {/each}
+                                        </tbody>
+                                    </table>
                                 </section>
                             </section>
                         </li>
                         <li class="h-4" />
                     {/each}
                     {#each Array(4 - history.size) as _}
-                        <li class="bg-gray-300 flex items-center p-2 h-32">
+                        <li class="bg-gray-300 flex items-center p-2 h-36">
                             <p
                                 class="text-center text-6xl text-gray-600 w-full">
                                 ?
@@ -275,18 +283,6 @@
                         <li class="h-4" />
                     {/each}
                 </ul>
-                <section class="flex justify-around p-2">
-                    {#each PRICE_OPTIONS as options}
-                        <label>
-                            <input
-                                type="radio"
-                                bind:group={selectedPriceOption}
-                                checked={options.value === selectedPriceOption}
-                                value={options.value} />
-                            {`${options.label} prices`}
-                        </label>
-                    {/each}
-                </section>
             {/if}
 
         </aside>
@@ -296,6 +292,18 @@
             <h1 class="text-4xl py-4 text-gray-600">COVID-19 vs. Markets</h1>
         </header>
 
+        <section class="flex justify-around pb-2">
+            {#each PRICE_OPTIONS as options}
+                <label>
+                    <input
+                        type="radio"
+                        bind:group={selectedPriceOption}
+                        checked={options.value === selectedPriceOption}
+                        value={options.value} />
+                    {`${options.label} prices`}
+                </label>
+            {/each}
+        </section>
         <Chart
             width={chartWidth}
             height={chartHeight}
