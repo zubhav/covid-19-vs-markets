@@ -8,3 +8,5 @@ steps:
         run: npm ci
       - name: Lint
         run: npm run format
+      - name: Build
+        run: npm run build
