@@ -23,6 +23,18 @@
 
     const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
+    let selectedPriceOption = 'close'
+    const PRICE_OPTIONS = [
+        {
+            label: 'Open',
+            value: 'open',
+        },
+        {
+            label: 'Close',
+            value: 'close',
+        },
+    ]
+
     let history = new Map()
 
     let dates = []
@@ -50,11 +62,11 @@
         return `${day}/${month}/${year}`
     }
 
-    const updateSeries = history => {
+    const updateSeries = (history, priceSelected) => {
         seriesList = []
-
         for (let value of history.values()) {
-            seriesList = [...seriesList, [...value.close]]
+            let prices = value[priceSelected]
+            seriesList = [...seriesList, [...prices]]
         }
     }
 
@@ -154,7 +166,7 @@
     }
 
     $: {
-        currentDay, history && updateSeries(history)
+        currentDay, history && updateSeries(history, selectedPriceOption)
     }
 
     $: {
@@ -263,6 +275,18 @@
                         <li class="h-4" />
                     {/each}
                 </ul>
+                <section class="flex justify-around p-2">
+                    {#each PRICE_OPTIONS as options}
+                        <label>
+                            <input
+                                type="radio"
+                                bind:group={selectedPriceOption}
+                                checked={options.value === selectedPriceOption}
+                                value={options.value} />
+                            {`${options.label} prices`}
+                        </label>
+                    {/each}
+                </section>
             {/if}
 
         </aside>
