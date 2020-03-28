@@ -185,7 +185,7 @@
             {:else}
                 <ul>
                     {#each Array.from(history.values()) as item (item.symbol)}
-                        <li class="border border-solid border-black p-2">
+                        <li class="border border-solid border-black p-2 h-32">
                             <button
                                 class="float-right"
                                 on:click|once={() => deleteSymbol(item.symbol)}>
@@ -214,6 +214,16 @@
                                     </p>
                                 </section>
                             </section>
+                        </li>
+                        <li class="h-4" />
+                    {/each}
+                    {#each Array(4 - history.size) as _}
+                        <li class="p-2 h-32 bg-gray-300 flex items-center">
+                            <p
+                                class="text-center text-6xl text-gray-600 w-full
+                                ">
+                                ?
+                            </p>
                         </li>
                         <li class="h-4" />
                     {/each}
