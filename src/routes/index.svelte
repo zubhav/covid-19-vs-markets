@@ -26,11 +26,11 @@
     let priceSelected = 'close'
     const candleAttributes = [
         {
-            label: 'Opened',
+            label: 'Open',
             value: 'open',
         },
         {
-            label: 'Closed',
+            label: 'Close',
             value: 'close',
         },
     ]
@@ -274,16 +274,18 @@
                         </li>
                         <li class="h-4" />
                     {/each}
-                    {#each candleAttributes as candleAttribute}
-                        <label>
-                            <input
-                                type="radio"
-                                bind:group={priceSelected}
-                                checked={candleAttribute.value === priceSelected}
-                                value={candleAttribute.value} />
-                            {candleAttribute.label}
-                        </label>
-                    {/each}
+                    <section class="flex justify-around">
+                        {#each candleAttributes as candleAttribute}
+                            <label>
+                                <input
+                                    type="radio"
+                                    bind:group={priceSelected}
+                                    checked={candleAttribute.value === priceSelected}
+                                    value={candleAttribute.value} />
+                                {`${candleAttribute.label} prices`}
+                            </label>
+                        {/each}
+                    </section>
                 </ul>
             {/if}
 
