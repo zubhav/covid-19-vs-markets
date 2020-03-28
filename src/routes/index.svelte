@@ -199,7 +199,7 @@
 <section class="flex">
     <section class="w-1/4">
         <aside
-            class="w-full h-full border-r border-solid border-gray-600 px-8 my-4
+            class="w-full border-r border-solid border-gray-600 px-8 my-8
             items-center justify-center">
             <section class="flex text-gray-600 mb-4 relative">
                 <span
@@ -284,13 +284,27 @@
                     {/each}
                 </ul>
             {/if}
-
         </aside>
     </section>
     <section class="w-3/4 text-center">
         <header class="font-bold">
-            <h1 class="text-4xl py-4 text-gray-600">COVID-19 vs. Markets</h1>
+            <h1 class="text-4xl text-center text-gray-600 px-2">
+                COVID-19 vs. Markets
+            </h1>
         </header>
+
+        {#if dates.length !== 0}
+            <section class="text-xl py-2">
+                <p>
+                    Selected date:
+                    <strong>{getDateFromTimestamp(dates[currentDay])}</strong>
+                </p>
+                <p>
+                    Market trading days since COVID-19:
+                    <strong>{currentDay + 1}</strong>
+                </p>
+            </section>
+        {/if}
 
         <section class="flex justify-around pb-2">
             {#each PRICE_OPTIONS as options}
@@ -312,28 +326,15 @@
             {labels}
             colors={LINE_COLORS} />
 
-        {#if dates.length !== 0}
-            <section class="text-sm py-2">
-                <p>
-                    Use the slider to show the affect of COVID-19 on selected
-                    indexes
-                </p>
+        <p class="py-2">
+            Use the slider to show the affect of COVID-19 on selected indexes
+        </p>
 
-                <p>
-                    Selected date:
-                    <strong>{getDateFromTimestamp(dates[currentDay])}</strong>
-                </p>
-                <p>
-                    Market trading days since COVID-19:
-                    <strong>{currentDay + 1}</strong>
-                </p>
-            </section>
-            <input
-                class="w-2/3"
-                type="range"
-                min="0"
-                max={dates.length - 1}
-                bind:value={currentDay} />
-        {/if}
+        <input
+            class="w-2/3"
+            type="range"
+            min="0"
+            max={dates.length - 1}
+            bind:value={currentDay} />
     </section>
 </section>
