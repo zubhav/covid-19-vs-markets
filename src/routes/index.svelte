@@ -191,7 +191,7 @@
     <title>COVID-19 vs Markets</title>
 </svelte:head>
 
-<section class="flex sm:flex-col-reverse md:flex-row">
+<section class="flex sm:flex-col md:flex-row">
     <section class="flex-grow-0">
         <aside
             class="border-r border-solid border-gray-600 px-8 my-8 items-center
@@ -242,7 +242,7 @@
                 </p>
                 <p>
                     Market trading days since COVID-19:
-                    <strong>{currentDay + 1}</strong>
+                    <strong data-testId="current-day">{currentDay + 1}</strong>
                 </p>
             </section>
         {/if}
@@ -276,6 +276,7 @@
         <input
             class="w-2/3"
             type="range"
+            aria-label="Date slider"
             min="0"
             max={dates.length - 1}
             bind:value={currentDay} />
