@@ -3,9 +3,6 @@
     import { fetchFromApi } from '../utils/fetchFromApi'
     import Chart from '../components/chart.svelte'
 
-    const chartWidth = 800
-    const chartHeight = 500
-
     const DEFAULT_OPTIONS = [
         {
             symbol: 'DHY',
@@ -322,13 +319,14 @@
                 </label>
             {/each}
         </section>
-        <Chart
-            width={chartWidth}
-            height={chartHeight}
-            series={seriesList}
-            stopValuesAt={currentDay}
-            {labels}
-            colors={LINE_COLORS} />
+
+        <section class="mx-10">
+            <Chart
+                series={seriesList}
+                stopValuesAt={currentDay}
+                colors={LINE_COLORS}
+                {labels} />
+        </section>
 
         <p class="py-2">
             Use the slider to show the affect of COVID-19 on selected indexes
