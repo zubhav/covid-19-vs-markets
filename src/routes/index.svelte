@@ -207,11 +207,11 @@
     <title>COVID-19 vs Markets</title>
 </svelte:head>
 
-<section class="flex">
-    <section class="w-1/4">
+<section class="flex sm:flex-col-reverse md:flex-row">
+    <section class="flex-grow-0">
         <aside
-            class="w-full border-r border-solid border-gray-600 px-8 my-8
-            items-center justify-center">
+            class="border-r border-solid border-gray-600 px-8 my-8 items-center
+            justify-center">
             <section class="flex text-gray-600 mb-4 relative">
                 <span
                     class="absolute top-0 left-0 h-full flex px-2 items-center
@@ -221,7 +221,7 @@
                 </span>
                 <input
                     type="text"
-                    class="w-full h-10 pl-10 border border-solid border-gray-600
+                    class="h-10 pl-10 border border-solid border-gray-600
                     rounded-lg placeholder-gray-600 disabled:cursor-not-allowed"
                     placeholder="Add a new symbol..."
                     disabled={history.size >= 4 || loading}
@@ -242,7 +242,7 @@
                 {#each Array.from(history.values()) as item, idx (item.symbol)}
                     <li
                         class="border border-solid border-gray-600 p-2 h-36
-                        rounded-md relative"
+                        rounded-md relative cursor-pointer"
                         on:mouseenter={() => handleHighlightSymbol(idx)}
                         on:mouseleave={() => handleHighlightSymbol(null)}>
                         <button
@@ -300,14 +300,11 @@
                     <li class="h-4" />
                 {/each}
             </ul>
-
         </aside>
     </section>
-    <section class="w-3/4 text-center">
+    <section class="flex-grow text-center">
         <header class="font-bold">
-            <h1 class="text-4xl text-center text-gray-600 px-2">
-                COVID-19 vs. Markets
-            </h1>
+            <h1 class="text-4xl text-gray-600 px-2">COVID-19 vs. Markets</h1>
         </header>
 
         {#if dates.length !== 0 && !loading}
