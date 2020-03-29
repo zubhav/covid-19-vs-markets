@@ -315,7 +315,7 @@
                 </p>
                 <p>
                     Market trading days since COVID-19:
-                    <strong>{currentDay + 1}</strong>
+                    <strong data-testId="current-day">{currentDay + 1}</strong>
                 </p>
             </section>
         {/if}
@@ -349,6 +349,7 @@
         <input
             class="w-2/3"
             type="range"
+            aria-label="Date slider"
             min="0"
             max={dates.length - 1}
             bind:value={currentDay} />
