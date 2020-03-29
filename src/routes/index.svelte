@@ -2,6 +2,7 @@
     import { onMount } from 'svelte'
     import { fetchFromApi } from '../utils/fetchFromApi'
     import Chart from '../components/chart.svelte'
+    import Loader from '../components/loader.svelte'
 
     const chartWidth = 800
     const chartHeight = 500
@@ -52,7 +53,8 @@
     let currentDay = 0
     let currentStock = ''
 
-    let highlightedSymbol
+    let loading = false
+    let highlightSymbol = null
 
     onMount(() => {
         fetchStockData(DEFAULT_OPTIONS)
@@ -129,10 +131,16 @@
         }
     }
 
+    const handleHighlightSymbol = (symbol = null) => {
+        highlightSymbol = symbol
+    }
+
     const fetchStockData = async options => {
         const stocks = options.map(({ symbol }) => symbol)
         const newEntries = getNewSymbols(stocks, history)
         const stocksQuery = newEntries.join(',')
+
+        loading = true
 
         try {
             const result = await fetchFromApi(
@@ -154,6 +162,8 @@
             if (labels.length !== dates.length) {
                 dates = labels
             }
+
+            loading = false
         } catch (err) {
             console.info('Error fetching stock data', stocks)
             console.info(err)
@@ -217,7 +227,7 @@
                     class="w-full h-10 pl-10 border border-solid border-gray-600
                     rounded-lg placeholder-gray-600 disabled:cursor-not-allowed"
                     placeholder="Add a new symbol..."
-                    disabled={history.size >= 4}
+                    disabled={history.size >= 4 || loading}
                     bind:value={currentStock}
                     on:keyup={handleSearchAndAddStock} />
                 <button
@@ -226,74 +236,74 @@
                     border-gray-600 bg-green text-white"
                     aria-label="Add symbol"
                     on:click={() => addNewSymbol(currentStock)}
-                    disabled={history.size >= 4}>
+                    disabled={history.size >= 4 || loading}>
                     &plus;
                 </button>
             </section>
 
-            {#if history.size === 0}
-                <p>Loading...</p>
-            {:else}
-                <ul>
-                    {#each Array.from(history.values()) as item, idx (item.symbol)}
-                        <li
-                            class="border border-solid border-gray-600 p-2 h-36
-                            rounded-md relative"
-                            on:mouseenter={() => (highlightedSymbol = idx)}
-                            on:mouseleave={() => (highlightedSymbol = null)}>
-                            <button
-                                aria-label="Remove symbol"
-                                class="absolute top-0 right-0 px-0 m-1 bg-red
-                                text-white rounded-md h-4 w-4"
-                                on:click|once={() => deleteSymbol(item.symbol)}>
-                                &times;
-                            </button>
-                            <section>
-                                <span
-                                    class="text-lg text-white tracking-wide p-1
-                                    mb-1 rounded-md"
-                                    style={`background-color: ${LINE_COLORS[idx]};`}>
-                                    &#36;{item.symbol}
-                                </span>
-                                <section class="text-sm py-2">
-                                    <table class="table-auto w-full">
-                                        <tbody>
-                                            {#each PRICE_OPTIONS as option}
-                                                <tr>
-                                                    <td class="pr-4">
-                                                        {option.label}
-                                                        {#if option.value === selectedPriceOption}
-                                                            (selected)
-                                                        {/if}
-                                                    </td>
-                                                    <td class="text-right">
-                                                        <strong
-                                                            style={`color: ${getColorByStockPerf(item[option.value], currentDay)}`}>
-                                                            {item[option.value][currentDay]}
-                                                        </strong>
-                                                    </td>
-                                                </tr>
-                                            {/each}
-                                        </tbody>
-                                    </table>
-                                </section>
+            <ul>
+                {#each Array.from(history.values()) as item, idx (item.symbol)}
+                    <li
+                        class="border border-solid border-gray-600 p-2 h-36
+                        rounded-md relative"
+                        on:mouseenter={() => handleHighlightSymbol(item.symbol)}
+                        on:mouseleave={() => handleHighlightSymbol(null)}>
+                        <button
+                            aria-label="Remove symbol"
+                            class="absolute top-0 right-0 px-0 m-1 bg-red
+                            text-white rounded-md h-4 w-4 leading-none"
+                            on:click|once={() => deleteSymbol(item.symbol)}>
+                            &times;
+                        </button>
+                        <section>
+                            <span
+                                class="text-lg text-white tracking-wide p-1 mb-1
+                                rounded-md"
+                                style={`background-color: ${LINE_COLORS[idx]};`}>
+                                &#36;{item.symbol}
+                            </span>
+                            <section class="text-sm py-2">
+                                <table class="table-auto w-full">
+                                    <tbody>
+                                        {#each PRICE_OPTIONS as option}
+                                            <tr>
+                                                <td class="pr-4">
+                                                    {option.label}
+                                                    {#if option.value === selectedPriceOption}
+                                                        (selected)
+                                                    {/if}
+                                                </td>
+                                                <td class="text-right">
+                                                    <strong
+                                                        style={`color: ${getColorByStockPerf(item[option.value], currentDay)}`}>
+                                                        {item[option.value][currentDay]}
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        {/each}
+                                    </tbody>
+                                </table>
                             </section>
-                        </li>
-                        <li class="h-4" />
-                    {/each}
-                    {#each Array(4 - history.size) as _}
-                        <li
-                            class="bg-gray-300 flex items-center p-2 h-36"
-                            aria-label="Empty symbol slot">
-                            <p
-                                class="text-center text-6xl text-gray-600 w-full">
-                                ?
-                            </p>
-                        </li>
-                        <li class="h-4" />
-                    {/each}
-                </ul>
-            {/if}
+                        </section>
+                    </li>
+                    <li class="h-4" />
+                {/each}
+                {#each Array(4 - history.size) as _, idx}
+                    <li
+                        class="bg-gray-300 flex items-center p-2 h-36"
+                        aria-label="Empty symbol slot">
+                        <p class="text-center text-6xl text-gray-600 w-full">
+                            {#if dates.length === 0}
+                                <Loader />
+                            {:else if loading && idx === 0}
+                                <Loader />
+                            {:else}?{/if}
+                        </p>
+                    </li>
+                    <li class="h-4" />
+                {/each}
+            </ul>
+
         </aside>
     </section>
     <section class="w-3/4 text-center">
@@ -303,7 +313,7 @@
             </h1>
         </header>
 
-        {#if dates.length !== 0}
+        {#if dates.length !== 0 && !loading}
             <section class="text-xl py-2">
                 <p>
                     Selected date:
