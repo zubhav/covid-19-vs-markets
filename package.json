@@ -9,7 +9,8 @@
         "now-build": "npm run export",
         "watch:tailwind": "postcss static/tailwind.css -o static/index.css -w",
         "build:tailwind": "NODE_ENV=production postcss static/tailwind.css -o static/index.css",
-        "format": "eslint src api --ext .svelte,.js"
+        "format": "eslint src api cypress --ext .svelte,.js",
+        "cypress:open": "cypress open"
     },
     "dependencies": {
         "compression": "^1.7.1",
@@ -29,6 +30,8 @@
         "@rollup/plugin-commonjs": "^11.0.0",
         "@rollup/plugin-node-resolve": "^7.0.0",
         "@rollup/plugin-replace": "^2.2.0",
+        "@testing-library/cypress": "^6.0.0",
+        "cypress": "^4.2.0",
         "eslint": "^6.8.0",
         "eslint-plugin-svelte3": "^2.7.3",
         "husky": "^4.2.3",
@@ -44,9 +47,8 @@
         "tailwindcss": "^1.2.0"
     },
     "lint-staged": {
-        "{api,src}/**/*.{js,svelte}": [
-            "npm run format",
-            "git add"
+        "{api,src,cypress}/**/*.{js,svelte}": [
+            "npm run format"
         ]
     },
     "husky": {
