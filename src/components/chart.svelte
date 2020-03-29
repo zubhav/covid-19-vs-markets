@@ -74,13 +74,15 @@
 
     function drawXLabels(labels) {
         let xSpacing = (chartWidth - X_OFFSET) / labels.length
+        const labelRotation = chartWidth <= 1024 ? 90 : 60
+
         for (let [index, label] of labels.entries()) {
             const dateAndMonth = getDateAndMonthForLabel(label)
             const xCalc = index * xSpacing
             const xPos = xCalc + X_OFFSET
             ctx.save()
             ctx.translate(xPos, chartHeight + 6)
-            ctx.rotate((60 * Math.PI) / 180)
+            ctx.rotate((labelRotation * Math.PI) / 180)
             ctx.font = '10px sans-serif'
             ctx.fillStyle = '#000000'
             ctx.fillText(dateAndMonth, 0, 0)
@@ -104,7 +106,10 @@
     }
 
     $: {
-        series.length > 0, xLabels.length > 0 && redrawChart()
+        series.length > 0,
+            xLabels.length,
+            chartWidth,
+            chartHeight > 0 && redrawChart()
     }
 
     $: {
