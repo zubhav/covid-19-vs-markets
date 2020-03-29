@@ -11,6 +11,7 @@
     let LINE_WIDTH = 2
     let BORDER_COLOR = '#718096'
     let BORDER_BG_COLOR = '#fcfcfc'
+    let NUMBER_OF_HORIZONTAL_SEGMENTS = 4
 
     let canvas
     let ctx
@@ -95,10 +96,24 @@
             .join('/')
     }
 
+    function drawGridLines() {
+        let repeat = chartWidth / NUMBER_OF_HORIZONTAL_SEGMENTS
+
+        for (let xPos = repeat; xPos < chartWidth; xPos += repeat) {
+            ctx.beginPath()
+            ctx.moveTo(xPos, 0)
+            ctx.lineTo(xPos, chartHeight)
+            ctx.lineWidth = 0.5
+            ctx.strokeStyle = '#e2e8f0'
+            ctx.stroke()
+        }
+    }
+
     function redrawChart() {
         canvas.width = docWidth
         canvas.height = docHeight
         drawCanvas(chartWidth, chartHeight)
+        drawGridLines()
         drawGraph(series)
         drawXLabels(xLabels)
     }
