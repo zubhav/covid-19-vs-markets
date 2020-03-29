@@ -43,7 +43,7 @@
             let ySpacing = (chartHeight - Y_OFFSET) / yRange
             let xSpacing = (chartWidth - X_OFFSET) / item.length
 
-            for (let j = 0; j <= stopValuesAt; j++) {
+            for (let j = 0; j < stopValuesAt; j++) {
                 const xCalc = j * xSpacing
                 const xPos = xCalc + X_OFFSET
 
@@ -51,25 +51,24 @@
                 const yPos = chartHeight - yCalc - Y_OFFSET / 2
 
                 const nextIndex = j + 1
-                if (nextIndex) {
-                    const xCalc2 = nextIndex * xSpacing
-                    const xPos2 = xCalc2 + X_OFFSET
 
-                    const yCalc2 = (item[nextIndex] - minYValue) * ySpacing
-                    const yPos2 = chartHeight - yCalc2 - Y_OFFSET / 2
+                const xCalc2 = nextIndex * xSpacing
+                const xPos2 = xCalc2 + X_OFFSET
 
-                    ctx.beginPath()
-                    ctx.lineJoin = 'round'
-                    ctx.moveTo(xPos, yPos)
-                    ctx.lineTo(xPos2, yPos2)
-                    if (symbolToHighlight === i) {
-                        ctx.lineWidth = 5
-                    } else {
-                        ctx.lineWidth = LINE_WIDTH
-                    }
-                    ctx.strokeStyle = colors[i]
-                    ctx.stroke()
+                const yCalc2 = (item[nextIndex] - minYValue) * ySpacing
+                const yPos2 = chartHeight - yCalc2 - Y_OFFSET / 2
+
+                ctx.beginPath()
+                ctx.lineJoin = 'round'
+                ctx.moveTo(xPos, yPos)
+                ctx.lineTo(xPos2, yPos2)
+                if (symbolToHighlight === i) {
+                    ctx.lineWidth = 5
+                } else {
+                    ctx.lineWidth = LINE_WIDTH
                 }
+                ctx.strokeStyle = colors[i]
+                ctx.stroke()
             }
         }
     }
