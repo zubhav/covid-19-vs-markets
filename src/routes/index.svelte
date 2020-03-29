@@ -207,7 +207,7 @@
     <title>COVID-19 vs Markets</title>
 </svelte:head>
 
-<section class="flex sm:flex-col-reverse md:flex-row">
+<section class="flex sm:flex-col md:flex-row">
     <section class="flex-grow-0">
         <aside
             class="border-r border-solid border-gray-600 px-8 my-8 items-center
