@@ -59,7 +59,6 @@
                 const yPos2 = chartHeight - yCalc2 - Y_OFFSET / 2
 
                 ctx.beginPath()
-                ctx.lineJoin = 'round'
                 ctx.moveTo(xPos, yPos)
                 ctx.lineTo(xPos2, yPos2)
                 if (symbolToHighlight === i) {
@@ -76,7 +75,7 @@
     function drawXLabels(labels) {
         let xSpacing = (chartWidth - X_OFFSET) / labels.length
         for (let [index, label] of labels.entries()) {
-            const dateAndMonth = getDateAndMonth(label)
+            const dateAndMonth = getDateAndMonthForLabel(label)
             const xCalc = index * xSpacing
             const xPos = xCalc + X_OFFSET
             ctx.save()
@@ -89,7 +88,7 @@
         }
     }
 
-    function getDateAndMonth(date) {
+    function getDateAndMonthForLabel(date) {
         return date
             .split('/')
             .slice(0, 2)
