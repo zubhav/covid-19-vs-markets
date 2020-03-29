@@ -227,6 +227,7 @@
                     class="absolute right-0 top-0 h-full flex justify-center
                     items-center text-2xl w-10 border rounded-r-lg border-solid
                     border-gray-600 bg-green text-white"
+                    aria-label="Add symbol"
                     on:click={() => addNewSymbol(currentStock)}
                     disabled={history.size >= 4 || loading}>
                     &plus;
@@ -241,7 +242,7 @@
                         <button
                             aria-label="Remove symbol"
                             class="absolute top-0 right-0 px-0 m-1 bg-red
-                            text-white rounded-md h-4 w-4"
+                            text-white rounded-md h-4 w-4 leading-none"
                             on:click|once={() => deleteSymbol(item.symbol)}>
                             &times;
                         </button>
@@ -283,7 +284,9 @@
                         class="bg-gray-300 flex items-center p-2 h-36"
                         aria-label="Empty symbol slot">
                         <p class="text-center text-6xl text-gray-600 w-full">
-                            {#if loading || dates.length === 0}
+                            {#if dates.length === 0}
+                                <Loader />
+                            {:else if loading && idx === 0}
                                 <Loader />
                             {:else}?{/if}
                         </p>

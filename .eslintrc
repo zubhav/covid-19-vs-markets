@@ -17,6 +17,16 @@
         }
     ],
     "globals": {
-        "process": true
+        "process": true,
+        "cy": true,
+        "Cypress": true,
+        "beforeEach": true,
+        "before": true,
+        "afterEach": true,
+        "after": true,
+        "context": true,
+        "describe": true,
+        "it": true,
+        "expect"
     }
 }
