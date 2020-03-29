@@ -11,7 +11,7 @@
     const { page } = stores()
 
     const { symbols } = $page.query
-    const symbolList = symbols.split(',')
+    const symbolList = symbols ? symbols.split(',') : []
 
     let DEFAULT_OPTIONS
     if (symbolList && symbolList.length > 0) {
