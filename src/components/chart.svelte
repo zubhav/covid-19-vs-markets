@@ -1,6 +1,7 @@
 <script>
     export let stopValuesAt
     export let colors
+    export let symbolToHighlight
 
     export let series
     export let labels
@@ -71,7 +72,11 @@
                 ctx.beginPath()
                 ctx.moveTo(xPos, yPos)
                 ctx.lineTo(xPos2, yPos2)
-                ctx.lineWidth = 2
+                if (symbolToHighlight && symbolToHighlight === i) {
+                    ctx.lineWidth = 5
+                } else {
+                    ctx.lineWidth = 2
+                }
                 ctx.strokeStyle = colors[i]
                 ctx.stroke()
             }
