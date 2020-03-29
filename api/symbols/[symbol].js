@@ -8,7 +8,7 @@ export default async (request, response) => {
 
     try {
         const symbol = await client.query(
-            q.Get(q.Match(q.Index('get_by_symbol'), input))
+            q.Get(q.Match(q.Index('get_by_symbol1'), input))
         )
         response.status(200).json(symbol.data)
     } catch (err) {
