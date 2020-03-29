@@ -15,9 +15,6 @@
     let canvas
     let ctx
 
-    let currentHeight
-    let currentWidth
-
     let docHeight
     let docWidth
 
@@ -27,22 +24,13 @@
     function drawCanvas(newWidth, newHeight) {
         ctx = canvas.getContext('2d')
 
-        chartHeight = newHeight - 30
-        chartWidth = newWidth
-
         ctx.beginPath()
         ctx.lineWidth = LINE_WIDTH
         ctx.strokeStyle = BORDER_COLOR
         ctx.fillStyle = BORDER_BG_COLOR
-        ctx.rect(0, 0, chartWidth, chartHeight)
-        ctx.fillRect(0, 0, chartWidth, chartHeight)
+        ctx.rect(0, 0, newWidth, newHeight)
+        ctx.fillRect(0, 0, newWidth, newHeight)
         ctx.stroke()
-
-        // drawXLabelCanvas(chartHeight, chartWidth)
-
-        // set new canvas width and height as current
-        currentWidth = docWidth
-        currentHeight = docHeight
     }
 
     function drawGraph(valueSet) {
@@ -89,42 +77,41 @@
     function drawXLabels(labels) {
         let xSpacing = (chartWidth - X_OFFSET) / labels.length
         for (let [index, label] of labels.entries()) {
+            const dateAndMonth = getDateAndMonth(label)
             const xCalc = index * xSpacing
             const xPos = xCalc + X_OFFSET
             ctx.save()
             ctx.translate(xPos, chartHeight + 6)
-            ctx.rotate((30 * Math.PI) / 180)
+            ctx.rotate((60 * Math.PI) / 180)
             ctx.font = '10px sans-serif'
             ctx.fillStyle = '#000000'
-            ctx.fillText(`${xLabels[index]}`, 0, 0)
+            ctx.fillText(dateAndMonth, 0, 0)
             ctx.restore()
         }
     }
 
-    function drawXLabelCanvas(newWidth, newHeight) {
-        ctx2 = canvas2.getContext('2d')
-        ctx2.beginPath()
-        ctx2.lineWidth = LINE_WIDTH
-        ctx2.strokeStyle = 'red'
-        ctx2.fillStyle = BORDER_BG_COLOR
-        ctx2.rect(0, chartHeight, chartWidth, 30)
-        ctx2.fillRect(0, chartHeight, chartWidth, 30)
-        ctx2.stroke()
+    function getDateAndMonth(date) {
+        return date
+            .split('/')
+            .slice(0, 2)
+            .join('/')
     }
 
     function redrawChart() {
         canvas.width = docWidth
         canvas.height = docHeight
-        drawCanvas(docWidth, docHeight)
+        drawCanvas(chartWidth, chartHeight)
         drawGraph(series)
         drawXLabels(xLabels)
     }
 
     $: {
-        series.length > 0,
-            xLabels.length > 0,
-            docWidth,
-            docHeight && redrawChart()
+        series.length > 0, xLabels.length > 0 && redrawChart()
+    }
+
+    $: {
+        chartWidth = docWidth
+        chartHeight = docHeight - 30
     }
 </script>
 
