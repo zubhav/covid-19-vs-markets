@@ -52,6 +52,8 @@
     let currentDay = 0
     let currentStock = ''
 
+    let highlightedSymbol
+
     onMount(() => {
         fetchStockData(DEFAULT_OPTIONS)
     })
@@ -174,7 +176,9 @@
     }
 
     $: {
-        currentDay, history && updateSeries(history, selectedPriceOption)
+        currentDay,
+            highlightedSymbol,
+            history && updateSeries(history, selectedPriceOption)
     }
 
     $: {
@@ -234,7 +238,9 @@
                     {#each Array.from(history.values()) as item, idx (item.symbol)}
                         <li
                             class="border border-solid border-gray-600 p-2 h-36
-                            rounded-md relative">
+                            rounded-md relative"
+                            on:mouseenter={() => (highlightedSymbol = idx)}
+                            on:mouseleave={() => (highlightedSymbol = null)}>
                             <button
                                 aria-label="Remove symbol"
                                 class="absolute top-0 right-0 px-0 m-1 bg-red
@@ -328,7 +334,8 @@
             series={seriesList}
             stopValuesAt={currentDay}
             {labels}
-            colors={LINE_COLORS} />
+            colors={LINE_COLORS}
+            symbolToHighlight={highlightedSymbol} />
 
         <p class="py-2">
             Use the slider to show the affect of COVID-19 on selected indexes
