@@ -54,7 +54,7 @@
     let currentStock = ''
 
     let loading = false
-    let highlightSymbol = null
+    let highlightedSymbolIndex = null
 
     onMount(() => {
         fetchStockData(DEFAULT_OPTIONS)
@@ -131,8 +131,8 @@
         }
     }
 
-    const handleHighlightSymbol = (symbol = null) => {
-        highlightSymbol = symbol
+    const handleHighlightSymbol = (symbolIndex = null) => {
+        highlightedSymbolIndex = symbolIndex
     }
 
     const fetchStockData = async options => {
@@ -187,7 +187,7 @@
 
     $: {
         currentDay,
-            highlightedSymbol,
+            highlightedSymbolIndex,
             history && updateSeries(history, selectedPriceOption)
     }
 
@@ -246,7 +246,7 @@
                     <li
                         class="border border-solid border-gray-600 p-2 h-36
                         rounded-md relative"
-                        on:mouseenter={() => handleHighlightSymbol(item.symbol)}
+                        on:mouseenter={() => handleHighlightSymbol(idx)}
                         on:mouseleave={() => handleHighlightSymbol(null)}>
                         <button
                             aria-label="Remove symbol"
@@ -345,7 +345,7 @@
             stopValuesAt={currentDay}
             {labels}
             colors={LINE_COLORS}
-            symbolToHighlight={highlightedSymbol} />
+            symbolToHighlight={highlightedSymbolIndex} />
 
         <p class="py-2">
             Use the slider to show the affect of COVID-19 on selected indexes

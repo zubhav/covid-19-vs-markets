@@ -63,11 +63,9 @@
                 ctx.moveTo(xPos, yPos)
                 ctx.lineTo(xPos2, yPos2)
                 if (symbolToHighlight && symbolToHighlight === i) {
-                    ctx.lineWidth = 4
-                    console.log('drawGraph -> lineWidth', i)
+                    ctx.lineWidth = 5
                 } else {
                     ctx.lineWidth = 2
-                    console.log('drawGraph -> lineWidth', i)
                 }
                 ctx.strokeStyle = colors[i]
                 ctx.stroke()
