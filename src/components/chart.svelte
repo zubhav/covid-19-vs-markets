@@ -1,7 +1,7 @@
 <script>
     export let stopValuesAt
     export let colors
-    export let symbolToHighlight
+    export let symbolToHighlight = null
 
     export let series
     export let labels
@@ -72,7 +72,7 @@
                 ctx.beginPath()
                 ctx.moveTo(xPos, yPos)
                 ctx.lineTo(xPos2, yPos2)
-                if (symbolToHighlight && symbolToHighlight === i) {
+                if (symbolToHighlight === i) {
                     ctx.lineWidth = 5
                 } else {
                     ctx.lineWidth = 2

@@ -343,7 +343,6 @@
                 colors={LINE_COLORS}
                 {labels}
                 symbolToHighlight={highlightedSymbolIndex} />
-            />
         </section>
 
         <p class="py-2">
