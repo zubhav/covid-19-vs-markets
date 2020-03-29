@@ -338,7 +338,7 @@
                 series={seriesList}
                 stopValuesAt={currentDay}
                 colors={LINE_COLORS}
-                {labels}
+                xLabels={labels}
                 symbolToHighlight={highlightedSymbolIndex} />
         </section>
 
