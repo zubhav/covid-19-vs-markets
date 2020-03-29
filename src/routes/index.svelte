@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte'
+    import { stores } from '@sapper/app'
     import { fetchFromApi } from '../utils/fetchFromApi'
     import Chart from '../components/chart.svelte'
     import Loader from '../components/loader.svelte'
@@ -7,20 +8,32 @@
     import EmptyCard from '../components/empty-card.svelte'
     import SearchField from '../components/search.svelte'
 
-    const DEFAULT_OPTIONS = [
-        {
-            symbol: 'DHY',
-        },
-        {
-            symbol: 'BLE',
-        },
-        {
-            symbol: 'JPM',
-        },
-        {
-            symbol: 'SPY',
-        },
-    ]
+    const { page } = stores()
+
+    const { symbols } = $page.query
+    const symbolList = symbols.split(',')
+
+    let DEFAULT_OPTIONS
+    if (symbolList && symbolList.length > 0) {
+        DEFAULT_OPTIONS = symbolList.map(symbol => {
+            return { symbol }
+        })
+    } else {
+        DEFAULT_OPTIONS = [
+            {
+                symbol: 'AMZN',
+            },
+            {
+                symbol: 'GOOGL',
+            },
+            {
+                symbol: 'SHOP',
+            },
+            {
+                symbol: 'MSFT',
+            },
+        ]
+    }
 
     const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
