@@ -22,7 +22,7 @@ jobs:
               run: npm run format
             - name: Build
               run: npm run build
-            - name: Cypress run
+            - name: E2E
               uses: cypress-io/github-action@v1
               with:
                   start: npm run dev

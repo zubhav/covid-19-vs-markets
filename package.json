@@ -48,8 +48,7 @@
     },
     "lint-staged": {
         "{api,src,cypress}/**/*.{js,svelte}": [
-            "npm run format",
-            "git add"
+            "npm run format"
         ]
     },
     "husky": {
