@@ -5,7 +5,6 @@ export const ga = gaID => {
     }
 
     gtag('js', new Date())
-
     gtag('config', gaID)
 
     const script = document.createElement('script')
