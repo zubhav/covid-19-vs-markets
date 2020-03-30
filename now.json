@@ -4,6 +4,11 @@
         "FINNHUB_API_KEY": "@finnhub_api_key",
         "FAUNA_SECRET_KEY": "@fauna_secret_key"
     },
+    "build": {
+        "env": {
+            "TRACKING_ID": "@ga_tracking_id"
+        }
+    },
     "routes": [
         {
             "src": "/api(.*)",
