@@ -5,5 +5,6 @@ sapper.start({
     target: document.querySelector('#sapper'),
 })
 
+console.log(process.env.TRACKING_ID)
 if (process.env.TRACKING_ID && process.env.NODE_ENV === 'production')
     ga(process.env.TRACKING_ID)
