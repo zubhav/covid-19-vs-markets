@@ -10,7 +10,7 @@
     let Y_OFFSET = 10
     let LINE_WIDTH = 2
     let BORDER_COLOR = '#718096'
-    let BORDER_BG_COLOR = '#fcfcfc'
+    let CHART_BG_COLOR = '#fcfcfc'
     let NUMBER_OF_HORIZONTAL_SEGMENTS = 4
 
     let canvas
@@ -28,9 +28,9 @@
         ctx.beginPath()
         ctx.lineWidth = LINE_WIDTH
         ctx.strokeStyle = BORDER_COLOR
-        ctx.fillStyle = BORDER_BG_COLOR
-        ctx.rect(0, 0, newWidth, newHeight)
-        ctx.fillRect(0, 0, newWidth, newHeight)
+        ctx.fillStyle = CHART_BG_COLOR
+        ctx.rect(30, 0, newWidth, newHeight)
+        ctx.fillRect(30, 0, newWidth, newHeight)
         ctx.stroke()
     }
 
@@ -39,6 +39,8 @@
         let minYValue = Math.min(...allValues)
         let maxYValue = Math.max(...allValues)
 
+        drawYLabels(minYValue, maxYValue, 10)
+
         for (const [i, item] of valueSet.entries()) {
             let yRange = maxYValue - minYValue
             let ySpacing = (chartHeight - Y_OFFSET) / yRange
@@ -46,7 +48,7 @@
 
             for (let j = 0; j < stopValuesAt; j++) {
                 const xCalc = j * xSpacing
-                const xPos = xCalc + X_OFFSET
+                const xPos = xCalc + X_OFFSET + 30
 
                 const yCalc = (item[j] - minYValue) * ySpacing
                 const yPos = chartHeight - yCalc - Y_OFFSET / 2
@@ -54,7 +56,7 @@
                 const nextIndex = j + 1
 
                 const xCalc2 = nextIndex * xSpacing
-                const xPos2 = xCalc2 + X_OFFSET
+                const xPos2 = xCalc2 + X_OFFSET + 30
 
                 const yCalc2 = (item[nextIndex] - minYValue) * ySpacing
                 const yPos2 = chartHeight - yCalc2 - Y_OFFSET / 2
@@ -82,11 +84,43 @@
             const xCalc = index * xSpacing
             const xPos = xCalc + X_OFFSET
             ctx.save()
-            ctx.translate(xPos, chartHeight + 6)
+            ctx.translate(xPos + 30, chartHeight + 6)
             ctx.rotate((labelRotation * Math.PI) / 180)
             ctx.font = '10px sans-serif'
             ctx.fillStyle = '#000000'
             ctx.fillText(dateAndMonth, 0, 0)
+            ctx.restore()
+        }
+    }
+
+    function calculateMaxYValue(maxY, steps) {
+        if (maxY < 2) return Math.ceil(maxY)
+        const roundedToTen = Math.ceil(maxY / 10) * 10
+        return Math.ceil(roundedToTen / steps) * steps
+    }
+
+    function calculateMinYValue(minY, steps) {
+        if (minY < 2) return Math.floor(minY)
+        const roundedToTen = Math.floor(minY / 10) * 10
+        return Math.floor(roundedToTen / steps) * steps
+    }
+
+    function drawYLabels(min, max, steps) {
+        let maxYValue = calculateMaxYValue(max, steps)
+        let minYValue = calculateMinYValue(min, steps)
+        let range = maxYValue - minYValue
+        let yFrequency = range / (steps - 1)
+        let ySpacing = (chartHeight - 7) / (steps - 1)
+
+        for (let i = 0; i < steps; i++) {
+            ctx.save()
+            let yValue = Math.round(minYValue + i * yFrequency)
+            let yPos = chartHeight - i * ySpacing
+
+            ctx.translate(0, yPos)
+            ctx.font = '10px sans-serif'
+            ctx.fillStyle = '#000000'
+            ctx.fillText(yValue, 0, 0)
             ctx.restore()
         }
     }
@@ -106,7 +140,7 @@
             ctx.moveTo(xPos, 0)
             ctx.lineTo(xPos, chartHeight)
             ctx.lineWidth = 0.5
-            ctx.strokeStyle = '#e2e8f0'
+            ctx.strokeStyle = BORDER_COLOR
             ctx.stroke()
         }
     }
@@ -121,14 +155,15 @@
     }
 
     $: {
-        series.length > 0,
-            xLabels.length,
-            chartWidth,
-            chartHeight > 0 && redrawChart()
+        series.length > 0 &&
+            xLabels.length > 0 &&
+            chartWidth &&
+            chartHeight &&
+            redrawChart()
     }
 
     $: {
-        chartWidth = docWidth
+        chartWidth = docWidth - 30
         chartHeight = docHeight - 30
     }
 </script>
