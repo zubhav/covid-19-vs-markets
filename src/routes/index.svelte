@@ -10,7 +10,7 @@
 
     const { page } = stores()
 
-    const { symbols } = $page.query
+    const { symbols, price } = $page.query
     const symbolList = symbols ? symbols.split(',') : []
 
     let DEFAULT_OPTIONS
@@ -35,9 +35,6 @@
         ]
     }
 
-    const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
-
-    let selectedPriceOption = 'close'
     const PRICE_OPTIONS = [
         {
             label: 'Open',
@@ -56,6 +53,11 @@
             value: 'high',
         },
     ]
+    let selectedPriceOption = PRICE_OPTIONS.find(({ value }) => value === price)
+        ? price
+        : 'close'
+
+    const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
     let history = new Map()
 
