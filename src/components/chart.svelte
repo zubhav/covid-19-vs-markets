@@ -53,7 +53,13 @@
         ctx.stroke()
     }
 
-    function drawGraph(valueSet, minYValue, maxYValue) {
+    function drawGraph(
+        chartWidth,
+        chartHeight,
+        valueSet,
+        minYValue,
+        maxYValue
+    ) {
         for (const [i, item] of valueSet.entries()) {
             let yRange = maxYValue - minYValue
             let ySpacing = (chartHeight - Y_OFFSET) / yRange
@@ -120,7 +126,7 @@
         return roundFunc(roundedToTen / steps) * steps
     }
 
-    function drawYLabelsAndXGridLines(min, max, steps) {
+    function drawYLabelsAndXGridLines(chartHeight, min, max, steps) {
         let maxYValue = calculateYValue(max, steps, Math.ceil)
         let minYValue = calculateYValue(min, steps, Math.floor)
 
@@ -186,10 +192,15 @@
         canvas.height = docHeight
 
         drawCanvas(chartWidth, chartHeight)
-        drawVerticalGridLines(chartWidth, chartHeight)
-        drawGraph(series, minYValue, maxYValue)
         drawXLabels(chartWidth, chartHeight, xLabels)
-        drawYLabelsAndXGridLines(minYValue, maxYValue, Y_AXIS_TICKS)
+        drawYLabelsAndXGridLines(
+            chartHeight,
+            minYValue,
+            maxYValue,
+            Y_AXIS_TICKS
+        )
+        drawVerticalGridLines(chartWidth, chartHeight)
+        drawGraph(chartWidth, chartHeight, series, minYValue, maxYValue)
     }
 
     $: {
