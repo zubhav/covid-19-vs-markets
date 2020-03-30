@@ -5,9 +5,18 @@
 
     export let series
     export let xLabels
+    export let ticks
 
-    let X_OFFSET = 10
-    let Y_OFFSET = 10
+    const X_OFFSET = 10
+    const Y_OFFSET = 10
+    const X_AXIS_OFFSET = 30
+    const Y_AXIS_OFFSET = 50
+    const CHART_TOP_PADDING = 10
+    const Y_AXIS_SPACING = 2
+    const X_AXIS_SPACING = 15
+
+    let Y_AXIS_TICKS = ticks || 10
+
     let LINE_WIDTH = 2
     let BORDER_COLOR = '#718096'
     let CHART_BG_COLOR = '#fcfcfc'
@@ -29,18 +38,28 @@
         ctx.lineWidth = LINE_WIDTH
         ctx.strokeStyle = BORDER_COLOR
         ctx.fillStyle = CHART_BG_COLOR
-        ctx.rect(30, 0, newWidth, newHeight)
-        ctx.fillRect(30, 0, newWidth, newHeight)
+        ctx.rect(
+            X_AXIS_OFFSET,
+            CHART_TOP_PADDING,
+            newWidth,
+            newHeight + CHART_TOP_PADDING
+        )
+        ctx.fillRect(
+            X_AXIS_OFFSET,
+            CHART_TOP_PADDING,
+            newWidth,
+            newHeight + CHART_TOP_PADDING
+        )
         ctx.stroke()
     }
 
-    function drawGraph(valueSet) {
-        const allValues = valueSet.flat()
-        let minYValue = Math.min(...allValues)
-        let maxYValue = Math.max(...allValues)
-
-        drawYLabels(minYValue, maxYValue, 10)
-
+    function drawGraph(
+        chartWidth,
+        chartHeight,
+        valueSet,
+        minYValue,
+        maxYValue
+    ) {
         for (const [i, item] of valueSet.entries()) {
             let yRange = maxYValue - minYValue
             let ySpacing = (chartHeight - Y_OFFSET) / yRange
@@ -48,18 +67,20 @@
 
             for (let j = 0; j < stopValuesAt; j++) {
                 const xCalc = j * xSpacing
-                const xPos = xCalc + X_OFFSET + 30
+                const xPos = xCalc + X_OFFSET + X_AXIS_OFFSET
 
                 const yCalc = (item[j] - minYValue) * ySpacing
-                const yPos = chartHeight - yCalc - Y_OFFSET / 2
+                const yPos =
+                    chartHeight - yCalc - Y_OFFSET / 2 + CHART_TOP_PADDING
 
                 const nextIndex = j + 1
 
                 const xCalc2 = nextIndex * xSpacing
-                const xPos2 = xCalc2 + X_OFFSET + 30
+                const xPos2 = xCalc2 + X_OFFSET + X_AXIS_OFFSET
 
                 const yCalc2 = (item[nextIndex] - minYValue) * ySpacing
-                const yPos2 = chartHeight - yCalc2 - Y_OFFSET / 2
+                const yPos2 =
+                    chartHeight - yCalc2 - Y_OFFSET / 2 + CHART_TOP_PADDING
 
                 ctx.beginPath()
                 ctx.moveTo(xPos, yPos)
@@ -75,16 +96,21 @@
         }
     }
 
-    function drawXLabels(labels) {
+    const getLabelRotation = width => (width <= 1024 ? 90 : 60)
+
+    function drawXLabels(chartWidth, chartHeight, labels) {
         let xSpacing = (chartWidth - X_OFFSET) / labels.length
-        const labelRotation = chartWidth <= 1024 ? 90 : 60
+        const labelRotation = getLabelRotation(chartWidth)
 
         for (let [index, label] of labels.entries()) {
             const dateAndMonth = getDateAndMonthForLabel(label)
             const xCalc = index * xSpacing
             const xPos = xCalc + X_OFFSET
             ctx.save()
-            ctx.translate(xPos + 30, chartHeight + 6)
+            ctx.translate(
+                xPos + X_AXIS_OFFSET,
+                chartHeight + CHART_TOP_PADDING + X_AXIS_SPACING
+            )
             ctx.rotate((labelRotation * Math.PI) / 180)
             ctx.font = '10px sans-serif'
             ctx.fillStyle = '#000000'
@@ -93,35 +119,44 @@
         }
     }
 
-    function calculateMaxYValue(maxY, steps) {
-        if (maxY < 2) return Math.ceil(maxY)
-        const roundedToTen = Math.ceil(maxY / 10) * 10
-        return Math.ceil(roundedToTen / steps) * steps
+    function calculateYValue(maxY, steps, roundFunc) {
+        const round = 10
+        if (maxY < 2) return roundFunc(maxY)
+        const roundedToTen = roundFunc(maxY / round) * round
+        return roundFunc(roundedToTen / steps) * steps
     }
 
-    function calculateMinYValue(minY, steps) {
-        if (minY < 2) return Math.floor(minY)
-        const roundedToTen = Math.floor(minY / 10) * 10
-        return Math.floor(roundedToTen / steps) * steps
-    }
+    function drawYLabelsAndXGridLines(chartHeight, min, max, steps) {
+        let maxYValue = calculateYValue(max, steps, Math.ceil)
+        let minYValue = calculateYValue(min, steps, Math.floor)
 
-    function drawYLabels(min, max, steps) {
-        let maxYValue = calculateMaxYValue(max, steps)
-        let minYValue = calculateMinYValue(min, steps)
         let range = maxYValue - minYValue
         let yFrequency = range / (steps - 1)
-        let ySpacing = (chartHeight - 7) / (steps - 1)
+        let ySpacing = (chartHeight + CHART_TOP_PADDING) / (steps - 1)
 
         for (let i = 0; i < steps; i++) {
             ctx.save()
             let yValue = Math.round(minYValue + i * yFrequency)
             let yPos = chartHeight - i * ySpacing
 
-            ctx.translate(0, yPos)
+            ctx.translate(
+                0,
+                yPos + CHART_TOP_PADDING + X_OFFSET + Y_AXIS_SPACING
+            )
             ctx.font = '10px sans-serif'
             ctx.fillStyle = '#000000'
             ctx.fillText(yValue, 0, 0)
             ctx.restore()
+
+            ctx.beginPath()
+            ctx.moveTo(0 + X_AXIS_OFFSET, yPos + CHART_TOP_PADDING + X_OFFSET)
+            ctx.lineTo(
+                chartWidth + X_AXIS_OFFSET,
+                yPos + CHART_TOP_PADDING + X_OFFSET
+            )
+            ctx.lineWidth = 0.5
+            ctx.strokeStyle = BORDER_COLOR
+            ctx.stroke()
         }
     }
 
@@ -132,13 +167,16 @@
             .join('/')
     }
 
-    function drawGridLines() {
+    function drawVerticalGridLines(chartWidth, chartHeight) {
         let repeat = chartWidth / NUMBER_OF_HORIZONTAL_SEGMENTS
 
         for (let xPos = repeat; xPos < chartWidth; xPos += repeat) {
             ctx.beginPath()
-            ctx.moveTo(xPos, 0)
-            ctx.lineTo(xPos, chartHeight)
+            ctx.moveTo(xPos + X_AXIS_OFFSET, CHART_TOP_PADDING)
+            ctx.lineTo(
+                xPos + X_AXIS_OFFSET,
+                chartHeight + CHART_TOP_PADDING + Y_OFFSET
+            )
             ctx.lineWidth = 0.5
             ctx.strokeStyle = BORDER_COLOR
             ctx.stroke()
@@ -146,12 +184,23 @@
     }
 
     function redrawChart() {
+        const allValues = series.flat()
+        let minYValue = Math.min(...allValues)
+        let maxYValue = Math.max(...allValues)
+
         canvas.width = docWidth
         canvas.height = docHeight
+
         drawCanvas(chartWidth, chartHeight)
-        drawGridLines()
-        drawGraph(series)
-        drawXLabels(xLabels)
+        drawXLabels(chartWidth, chartHeight, xLabels)
+        drawYLabelsAndXGridLines(
+            chartHeight,
+            minYValue,
+            maxYValue,
+            Y_AXIS_TICKS
+        )
+        drawVerticalGridLines(chartWidth, chartHeight)
+        drawGraph(chartWidth, chartHeight, series, minYValue, maxYValue)
     }
 
     $: {
@@ -163,8 +212,8 @@
     }
 
     $: {
-        chartWidth = docWidth - 30
-        chartHeight = docHeight - 30
+        chartWidth = docWidth - X_AXIS_OFFSET
+        chartHeight = docHeight - Y_AXIS_OFFSET - CHART_TOP_PADDING
     }
 </script>
 

@@ -4,7 +4,6 @@ export const ga = gaID => {
         window.dataLayer.push(arguments)
     }
 
-    console.log(gaID)
     gtag('js', new Date())
     gtag('config', gaID)
 
