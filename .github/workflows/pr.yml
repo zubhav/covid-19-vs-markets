@@ -33,14 +33,11 @@ jobs:
         runs-on: ubuntu-16.04
         steps:
             - uses: actions/checkout@v2
-            - name: Use Node.js
-              uses: actions/setup-node@v1
-              with:
-                  node-version: '12.x'
             - uses: amondnet/now-deployment@v2
               with:
                   zeit-token: ${{ secrets.ZEIT_TOKEN }}
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   zeit-team-id: team_wCLukMFMpi08J93bEKoK6iDX
+                  now-args: ''
                   now-org-id: ${{ secrets.NOW_ORG_ID}}
                   now-project-id: ${{ secrets.NOW_PROJECT_ID}}
