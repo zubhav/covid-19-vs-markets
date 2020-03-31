@@ -126,7 +126,7 @@
         return roundFunc(roundedToTen / steps) * steps
     }
 
-    function drawYLabelsAndXGridLines(chartHeight, min, max, steps) {
+    function drawYLabels(chartHeight, min, max, steps) {
         let maxYValue = calculateYValue(max, steps, Math.ceil)
         let minYValue = calculateYValue(min, steps, Math.floor)
 
@@ -147,7 +147,14 @@
             ctx.fillStyle = '#000000'
             ctx.fillText(yValue, 0, 0)
             ctx.restore()
+        }
+    }
 
+    function drawHorizontalLines(chartWidth, chartHeight, steps) {
+        let ySpacing = (chartHeight + CHART_TOP_PADDING) / (steps - 1)
+
+        for (let i = 0; i < steps; i++) {
+            let yPos = chartHeight - i * ySpacing
             ctx.beginPath()
             ctx.moveTo(0 + X_AXIS_OFFSET, yPos + CHART_TOP_PADDING + X_OFFSET)
             ctx.lineTo(
@@ -167,8 +174,8 @@
             .join('/')
     }
 
-    function drawVerticalGridLines(chartWidth, chartHeight) {
-        let repeat = chartWidth / NUMBER_OF_HORIZONTAL_SEGMENTS
+    function drawVerticalGridLines(chartWidth, chartHeight, lines) {
+        let repeat = chartWidth / lines
 
         for (let xPos = repeat; xPos < chartWidth; xPos += repeat) {
             ctx.beginPath()
@@ -193,13 +200,15 @@
 
         drawCanvas(chartWidth, chartHeight)
         drawXLabels(chartWidth, chartHeight, xLabels)
-        drawYLabelsAndXGridLines(
+        if (allValues.length > 0) {
+            drawYLabels(chartHeight, minYValue, maxYValue, Y_AXIS_TICKS)
+        }
+        drawHorizontalLines(chartWidth, chartHeight, Y_AXIS_TICKS)
+        drawVerticalGridLines(
+            chartWidth,
             chartHeight,
-            minYValue,
-            maxYValue,
-            Y_AXIS_TICKS
+            NUMBER_OF_HORIZONTAL_SEGMENTS
         )
-        drawVerticalGridLines(chartWidth, chartHeight)
         drawGraph(chartWidth, chartHeight, series, minYValue, maxYValue)
     }
 
