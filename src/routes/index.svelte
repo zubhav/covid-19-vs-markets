@@ -172,7 +172,7 @@
                 })
             }
 
-            if (labels.length !== dates.length) {
+            if (dates.length === 0) {
                 dates = labels
             }
 
