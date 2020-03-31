@@ -204,11 +204,8 @@
     }
 
     $: {
-        series.length > 0 &&
-            xLabels.length > 0 &&
-            chartWidth &&
-            chartHeight &&
-            redrawChart()
+        series.length > 0,
+            xLabels.length > 0 && chartWidth && chartHeight && redrawChart()
     }
 
     $: {
