@@ -1,0 +1,19 @@
+name: Deploy to Staging
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    deploy:
+        runs-on: ubuntu-16.04
+        steps:
+            - uses: actions/checkout@v2
+            - uses: amondnet/now-deployment@v2
+              with:
+                  zeit-token: ${{ secrets.NOW_TOKEN }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  zeit-team-id: team_wCLukMFMpi08J93bEKoK6iDX
+                  now-args: '--target staging'
+                  now-org-id: ${{ secrets.NOW_ORG_ID}}
+                  now-project-id: ${{ secrets.NOW_PROJECT_ID}}
