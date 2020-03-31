@@ -35,7 +35,7 @@ jobs:
             - uses: actions/checkout@v2
             - uses: amondnet/now-deployment@v2
               with:
-                  zeit-token: ${{ secrets.ZEIT_TOKEN }}
+                  zeit-token: ${{ secrets.NOW_TOKEN }}
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   zeit-team-id: team_wCLukMFMpi08J93bEKoK6iDX
                   now-args: ''
