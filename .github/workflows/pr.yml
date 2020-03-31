@@ -29,7 +29,6 @@ jobs:
                   wait-on: 'http://localhost:3000'
               env:
                   CI: true
-jobs:
     deploy:
         runs-on: ubuntu-16.04
         steps:
@@ -45,4 +44,3 @@ jobs:
                   zeit-team-id: team_wCLukMFMpi08J93bEKoK6iDX
                   now-org-id: ${{ secrets.NOW_ORG_ID}}
                   now-project-id: ${{ secrets.NOW_PROJECT_ID}}
-
