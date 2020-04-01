@@ -14,7 +14,6 @@
     const symbolList = symbols ? symbols.split(',') : []
 
     let DEFAULT_OPTIONS
-    console.log('staging')
     if (symbolList && symbolList.length > 0) {
         DEFAULT_OPTIONS = symbolList.map(symbol => {
             return { symbol }
