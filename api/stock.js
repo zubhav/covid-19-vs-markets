@@ -14,7 +14,7 @@ export default async (request, response) => {
 
         const promises = symbolList.map(symbol => {
             const from = getTimestampFromDateStr(new Date(FIRST_DAY_2020))
-            const to = getTimestampFromDateStr(new Date())
+            const to = getTimestampFromDateStr(new Date().setHours(0, 0, 0, 0))
 
             return fetch(
                 `${API_ENDPOINT}?symbol=${symbol.toUpperCase()}&resolution=D&from=${from}&to=${to}&token=${API_KEY}`
