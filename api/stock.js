@@ -5,9 +5,10 @@ const getTimestampFromDateStr = dt => Math.floor(dt.getTime() / 1000)
 
 export default async (request, response) => {
     const API_ENDPOINT = 'https://finnhub.io/api/v1/stock/candle'
-    const symbolList = request.query.symbols.split(',')
+    const querySymbols = request.query.symbols
+    const symbolList = querySymbols ? querySymbols.split(',') : []
 
-    if (symbolList && symbolList.length > 0) {
+    if (symbolList.length > 0) {
         const API_KEY = process.env.FINNHUB_API_KEY
         const FIRST_DAY_2020 = '01/02/2020'
 
@@ -20,10 +21,16 @@ export default async (request, response) => {
             ).then(res => res.json())
         })
 
-        const results = await Promise.all(promises)
+        let results = []
+
+        try {
+            results = await Promise.all(promises)
+        } catch (e) {
+            response.status(500)
+        }
 
         let data = []
-        let dates
+        let dates = []
 
         results.map((res, idx) => {
             const { c, o, h, l, t, s } = res

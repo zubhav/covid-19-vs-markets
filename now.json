@@ -16,10 +16,14 @@
             "headers": {
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
-                "Access-Control-Allow-Origin": "*"
+                "Access-Control-Allow-Origin": "*",
+                "cache-control": "s-maxage=43200"
             },
             "methods": ["GET"]
         }
     ],
+    "github": {
+        "enabled": false
+    },
     "scope": "prubby"
 }
