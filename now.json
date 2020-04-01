@@ -16,8 +16,7 @@
             "headers": {
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
-                "Access-Control-Allow-Origin": "*",
-                "cache-control": "s-maxage=86400"
+                "Access-Control-Allow-Origin": "*"
             },
             "methods": ["GET"]
         }
