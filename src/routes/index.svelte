@@ -14,6 +14,7 @@
     const symbolList = symbols ? symbols.split(',') : []
 
     let DEFAULT_OPTIONS
+
     if (symbolList && symbolList.length > 0) {
         DEFAULT_OPTIONS = symbolList.map(symbol => {
             return { symbol }
