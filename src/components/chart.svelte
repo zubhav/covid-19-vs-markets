@@ -1,11 +1,11 @@
 <script>
-    export let stopValuesAt
     export let colors
     export let symbolToHighlight = null
 
     export let series
     export let xLabels
     export let ticks
+    export let stopValuesAt = xLabels.length
 
     const X_OFFSET = 10
     const Y_OFFSET = 10
@@ -18,6 +18,7 @@
     let Y_AXIS_TICKS = ticks || 10
 
     let LINE_WIDTH = 2
+    let AXIS_LINE_WIDTH = LINE_WIDTH / 4
     let BORDER_COLOR = '#718096'
     let CHART_BG_COLOR = '#fcfcfc'
     let NUMBER_OF_HORIZONTAL_SEGMENTS = 4
@@ -35,8 +36,7 @@
         ctx = canvas.getContext('2d')
 
         ctx.beginPath()
-        ctx.lineWidth = LINE_WIDTH
-        ctx.strokeStyle = BORDER_COLOR
+        ctx.strokeStyle = 'transparent'
         ctx.fillStyle = CHART_BG_COLOR
         ctx.rect(
             X_AXIS_OFFSET,
@@ -63,11 +63,11 @@
         for (const [i, item] of valueSet.entries()) {
             let yRange = maxYValue - minYValue
             let ySpacing = (chartHeight - Y_OFFSET) / yRange
-            let xSpacing = (chartWidth - X_OFFSET) / item.length
+            let xSpacing = (chartWidth - X_OFFSET) / (item.length - 1)
 
             for (let j = 0; j < stopValuesAt; j++) {
                 const xCalc = j * xSpacing
-                const xPos = xCalc + X_OFFSET + X_AXIS_OFFSET
+                const xPos = xCalc + X_AXIS_OFFSET
 
                 const yCalc = (item[j] - minYValue) * ySpacing
                 const yPos =
@@ -76,7 +76,7 @@
                 const nextIndex = j + 1
 
                 const xCalc2 = nextIndex * xSpacing
-                const xPos2 = xCalc2 + X_OFFSET + X_AXIS_OFFSET
+                const xPos2 = xCalc2 + X_AXIS_OFFSET
 
                 const yCalc2 = (item[nextIndex] - minYValue) * ySpacing
                 const yPos2 =
@@ -99,13 +99,12 @@
     const getLabelRotation = width => (width <= 1024 ? 90 : 60)
 
     function drawXLabels(chartWidth, chartHeight, labels) {
-        let xSpacing = (chartWidth - X_OFFSET) / labels.length
+        let xSpacing = (chartWidth - X_OFFSET) / (labels.length - 1)
         const labelRotation = getLabelRotation(chartWidth)
 
         for (let [index, label] of labels.entries()) {
             const dateAndMonth = getDateAndMonthForLabel(label)
-            const xCalc = index * xSpacing
-            const xPos = xCalc + X_OFFSET
+            const xPos = index * xSpacing
             ctx.save()
             ctx.translate(
                 xPos + X_AXIS_OFFSET,
@@ -153,7 +152,7 @@
     function drawHorizontalLines(chartWidth, chartHeight, steps) {
         let ySpacing = (chartHeight + CHART_TOP_PADDING) / (steps - 1)
 
-        for (let i = 0; i < steps; i++) {
+        for (let i = 0; i < steps - 1; i++) {
             let yPos = chartHeight - i * ySpacing
             ctx.beginPath()
             ctx.moveTo(0 + X_AXIS_OFFSET, yPos + CHART_TOP_PADDING + X_OFFSET)
@@ -161,7 +160,13 @@
                 chartWidth + X_AXIS_OFFSET,
                 yPos + CHART_TOP_PADDING + X_OFFSET
             )
-            ctx.lineWidth = 0.5
+
+            if (i === 0) {
+                ctx.lineWidth = LINE_WIDTH
+            } else {
+                ctx.lineWidth = AXIS_LINE_WIDTH
+            }
+
             ctx.strokeStyle = BORDER_COLOR
             ctx.stroke()
         }
@@ -175,16 +180,24 @@
     }
 
     function drawVerticalGridLines(chartWidth, chartHeight, lines) {
-        let repeat = chartWidth / lines
+        let xSpacing = chartWidth / lines
 
-        for (let xPos = repeat; xPos < chartWidth; xPos += repeat) {
+        for (let i = 0; i < lines; i++) {
+            let xPos = i * xSpacing
+
             ctx.beginPath()
             ctx.moveTo(xPos + X_AXIS_OFFSET, CHART_TOP_PADDING)
             ctx.lineTo(
                 xPos + X_AXIS_OFFSET,
                 chartHeight + CHART_TOP_PADDING + Y_OFFSET
             )
-            ctx.lineWidth = 0.5
+
+            if (i === 0) {
+                ctx.lineWidth = LINE_WIDTH
+            } else {
+                ctx.lineWidth = AXIS_LINE_WIDTH
+            }
+
             ctx.strokeStyle = BORDER_COLOR
             ctx.stroke()
         }
@@ -223,6 +236,9 @@
     }
 </script>
 
-<section bind:clientWidth={docWidth} bind:clientHeight={docHeight}>
+<section
+    bind:clientWidth={docWidth}
+    style={`max-height: 100vh; height: auto;`}
+    bind:clientHeight={docHeight}>
     <canvas class="w-full" bind:this={canvas} />
 </section>
