@@ -13,6 +13,6 @@ jobs:
                   zeit-token: ${{ secrets.NOW_TOKEN }}
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   zeit-team-id: team_wCLukMFMpi08J93bEKoK6iDX
-                  now-args: '--target production'
+                  now-args: '--prod'
                   now-org-id: ${{ secrets.NOW_ORG_ID}}
                   now-project-id: ${{ secrets.NOW_PROJECT_ID}}
