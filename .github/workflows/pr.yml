@@ -1,8 +1,5 @@
 name: Pull Request
 on:
-    push:
-        branches:
-            - master
     pull_request:
         branches:
             - master
@@ -29,3 +26,15 @@ jobs:
                   wait-on: 'http://localhost:3000'
               env:
                   CI: true
+    deploy:
+        runs-on: ubuntu-16.04
+        steps:
+            - uses: actions/checkout@v2
+            - uses: amondnet/now-deployment@v2
+              with:
+                  zeit-token: ${{ secrets.NOW_TOKEN }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  zeit-team-id: team_wCLukMFMpi08J93bEKoK6iDX
+                  now-args: ''
+                  now-org-id: ${{ secrets.NOW_ORG_ID}}
+                  now-project-id: ${{ secrets.NOW_PROJECT_ID}}

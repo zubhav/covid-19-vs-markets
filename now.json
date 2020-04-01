@@ -22,5 +22,8 @@
             "methods": ["GET"]
         }
     ],
+    "github": {
+        "enabled": false
+    },
     "scope": "prubby"
 }
