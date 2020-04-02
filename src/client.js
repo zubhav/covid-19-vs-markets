@@ -1,5 +1,5 @@
 import * as sapper from '@sapper/app'
-import { ga } from './utils/ga'
+import { ga } from './utils/ga.utils'
 
 sapper.start({
     target: document.querySelector('#sapper'),

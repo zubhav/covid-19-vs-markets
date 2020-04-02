@@ -1,7 +1,8 @@
 <script>
     import { onMount } from 'svelte'
-    import { stores } from '@sapper/app'
-    import { fetchFromApi } from '../utils/fetchFromApi'
+    import { stores, goto } from '@sapper/app'
+    import { fetchFromApi } from '../utils/fetchFromApi.utils'
+    import { getDateFromTimestamp } from '../utils/date.utils'
     import Chart from '../components/chart.svelte'
     import Loader from '../components/loader.svelte'
     import Card from '../components/card.svelte'
@@ -53,6 +54,7 @@
             value: 'high',
         },
     ]
+
     let selectedPriceOption = PRICE_OPTIONS.find(({ value }) => value === price)
         ? price
         : 'close'
@@ -75,18 +77,23 @@
         fetchStockData(DEFAULT_OPTIONS)
     })
 
-    const getNewSymbols = (stocks, history) => {
-        return stocks.filter(stock => !history.get(stock))
+    const updateQueryParams = (history, priceOption) => {
+        const currentSymbols = Array.from(history.keys())
+        let queryParams = '?'
+
+        if (currentSymbols.length > 0) {
+            queryParams += `symbols=${currentSymbols.join(',')}&`
+        }
+
+        queryParams += `price=${priceOption}`
+
+        if (typeof document !== 'undefined') {
+            goto(queryParams)
+        }
     }
 
-    const padZero = num => (num < 10 ? `0${num}` : `${num}`)
-
-    const getDateFromTimestamp = timestamp => {
-        const dateObj = new Date(timestamp * 1000)
-        const year = dateObj.getFullYear()
-        const month = padZero(dateObj.getMonth() + 1)
-        const day = padZero(dateObj.getDate())
-        return `${day}/${month}/${year}`
+    const getNewSymbols = (stocks, history) => {
+        return stocks.filter(stock => !history.get(stock))
     }
 
     const updateSeries = (history, priceSelected) => {
@@ -206,6 +213,12 @@
     }
 
     $: {
+        history,
+            selectedPriceOption &&
+                updateQueryParams(history, selectedPriceOption)
+    }
+
+    $: {
         history.size && resetHighlightedSymbol()
     }
 </script>
@@ -252,6 +265,7 @@
             </ul>
         </aside>
     </section>
+
     <section class="flex-grow text-center">
         <header class="font-bold">
             <h1 class="text-4xl text-gray-600 px-2">COVID-19 vs. Markets</h1>

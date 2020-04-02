@@ -3,6 +3,6 @@ const baseUrl =
         ? 'https://covid-19-vs-market.now.sh'
         : ''
 
-export function fetchFromApi(path, options = {}) {
+export const fetchFromApi = (path, options = {}) => {
     return fetch(`${baseUrl}${path}`, options)
 }
