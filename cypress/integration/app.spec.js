@@ -1,4 +1,4 @@
-describe('Main', () => {
+describe('App', () => {
     describe('polyfill window.fetch from tests', function() {
         let polyfill
 
