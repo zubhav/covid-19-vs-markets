@@ -138,6 +138,7 @@
     const deleteSymbol = symbol => {
         history.delete(symbol)
         history = history
+        highlightedSymbolIndex = null
     }
 
     const handleSearchAndAddStock = async () => {
