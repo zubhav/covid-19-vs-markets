@@ -155,6 +155,10 @@
         highlightedSymbolIndex = symbolIndex
     }
 
+    const resetHighlightedSymbol = () => {
+        highlightedSymbolIndex = null
+    }
+
     const fetchStockData = async options => {
         const stocks = options.map(({ symbol }) => symbol)
         const newEntries = getNewSymbols(stocks, history)
@@ -208,8 +212,15 @@
         labels = dates.map(date => getDateFromTimestamp(date))
     }
 
-    $: history,
-        selectedPriceOption && updateQueryParams(history, selectedPriceOption)
+    $: {
+        history,
+            selectedPriceOption &&
+                updateQueryParams(history, selectedPriceOption)
+    }
+
+    $: {
+        history.size && resetHighlightedSymbol()
+    }
 </script>
 
 <svelte:head>
