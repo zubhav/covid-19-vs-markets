@@ -138,7 +138,6 @@
     const deleteSymbol = symbol => {
         history.delete(symbol)
         history = history
-        highlightedSymbolIndex = null
     }
 
     const handleSearchAndAddStock = async () => {
@@ -147,6 +146,10 @@
 
     const handleHighlightSymbol = (symbolIndex = null) => {
         highlightedSymbolIndex = symbolIndex
+    }
+
+    const resetHighlightedSymbol = () => {
+        highlightedSymbolIndex = null
     }
 
     const fetchStockData = async options => {
@@ -200,6 +203,10 @@
 
     $: {
         labels = dates.map(date => getDateFromTimestamp(date))
+    }
+
+    $: {
+        history.size && resetHighlightedSymbol()
     }
 </script>
 
