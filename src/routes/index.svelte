@@ -97,6 +97,16 @@
         }
     }
 
+    const saveHistoryToLocalStorage = stocks => {
+        history.forEach(stock => {})
+    }
+
+    const saveSelectedPriceToLocalStorage = selectedPriceOption => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('price', selectedPriceOption)
+        }
+    }
+
     const fetchSymbol = async symbolQuery => {
         try {
             const result = await fetchFromApi(`/api/symbols/${symbolQuery}`)
@@ -207,6 +217,11 @@
 
     $: {
         history.size && resetHighlightedSymbol()
+    }
+
+    $: {
+        selectedPriceOption &&
+            saveSelectedPriceToLocalStorage(selectedPriceOption)
     }
 </script>
 
