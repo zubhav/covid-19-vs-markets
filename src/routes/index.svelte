@@ -87,7 +87,9 @@
 
         queryParams += `price=${priceOption}`
 
-        goto(queryParams)
+        if (typeof document !== 'undefined') {
+            goto(queryParams)
+        }
     }
 
     const getNewSymbols = (stocks, history) => {
