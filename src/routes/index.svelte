@@ -106,6 +106,7 @@
         if (price && priceOptionExists(price)) {
             return price
         }
+
         if (storedPrice && priceOptionExists(storedPrice)) {
             return storedPrice
         }
