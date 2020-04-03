@@ -12,6 +12,21 @@
     const { page } = stores()
     const { symbols, price } = $page.query
 
+    const DEFAULT_OPTIONS = [
+        {
+            symbol: 'AMZN',
+        },
+        {
+            symbol: 'GOOGL',
+        },
+        {
+            symbol: 'SHOP',
+        },
+        {
+            symbol: 'MSFT',
+        },
+    ]
+
     const PRICE_OPTIONS = [
         {
             label: 'Open',
@@ -30,6 +45,8 @@
             value: 'high',
         },
     ]
+
+    const DEFAULT_PRICE_OPTION = 'close'
 
     const LS_SYMBOLS = 'symbols'
     const LS_PRICE = 'price'
@@ -53,51 +70,33 @@
     let isDocumentReady = false
 
     onMount(() => {
-        let DEFAULT_OPTIONS = []
+        let selectedSymbols = []
 
-        if (typeof document !== 'undefined') {
-            isDocumentReady = true
-        }
+        isDocumentReady = true
 
         selectedPriceOption = getDefaultPriceOption(price)
 
-        DEFAULT_OPTIONS = getDefaultOptions(symbols)
-        fetchStockData(DEFAULT_OPTIONS)
+        selectedSymbols = getDefaultOptions(symbols)
+        fetchStockData(selectedSymbols)
     })
 
     const getDefaultOptions = symbols => {
-        let symbolList
+        let symbolList = []
         const storedSymbols = localStorage.getItem(LS_SYMBOLS)
 
         if (symbols) {
             symbolList = symbols.split(',')
         } else if (storedSymbols) {
-            const symbolsString = storedSymbols
-            symbolList = symbolsString.split(',')
+            symbolList = storedSymbols.split(',')
         }
 
-        if (symbolList && symbolList.length > 0) {
+        if (symbolList.length > 0) {
             return symbolList.map(symbol => {
                 return { symbol }
             })
         }
 
-        const options = [
-            {
-                symbol: 'AMZN',
-            },
-            {
-                symbol: 'GOOGL',
-            },
-            {
-                symbol: 'SHOP',
-            },
-            {
-                symbol: 'MSFT',
-            },
-        ]
-
-        return options
+        return DEFAULT_OPTIONS
     }
 
     const getDefaultPriceOption = price => {
@@ -111,9 +110,7 @@
             return storedPrice
         }
 
-        const priceOption = 'close'
-
-        return priceOption
+        return DEFAULT_PRICE_OPTION
     }
 
     const updateQueryParams = (history, priceOption) => {
@@ -140,7 +137,7 @@
         }
     }
 
-    const saveSymbols = history => {
+    const saveSelectedSymbols = history => {
         const currentSymbols = Array.from(history.keys())
         let symbolList = ''
 
@@ -285,7 +282,7 @@
     }
 
     $: {
-        history, isDocumentReady && saveSymbols(history)
+        history && isDocumentReady && saveSelectedSymbols(history)
     }
 </script>
 
