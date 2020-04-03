@@ -19,6 +19,8 @@
         DEFAULT_OPTIONS = symbolList.map(symbol => {
             return { symbol }
         })
+    } else if (localStorage.hasOwnProperty('symbols')) {
+        DEFAULT_OPTIONS = localStorage.getItem('symbols')
     } else {
         DEFAULT_OPTIONS = [
             {
@@ -73,8 +75,14 @@
     let loading = false
     let highlightedSymbolIndex = null
 
+    let isDocumentReady = false
+
     onMount(() => {
         fetchStockData(DEFAULT_OPTIONS)
+
+        if (typeof document !== 'undefined') {
+            isDocumentReady = true
+        }
     })
 
     const updateQueryParams = (history, priceOption) => {
@@ -84,12 +92,9 @@
         if (currentSymbols.length > 0) {
             queryParams += `symbols=${currentSymbols.join(',')}&`
         }
-
         queryParams += `price=${priceOption}`
 
-        if (typeof document !== 'undefined') {
-            goto(queryParams)
-        }
+        goto(queryParams)
     }
 
     const getNewSymbols = (stocks, history) => {
@@ -104,14 +109,22 @@
         }
     }
 
-    const saveHistoryToLocalStorage = stocks => {
-        history.forEach(stock => {})
+    const saveSymbolsToLocalStorage = history => {
+        const currentSymbols = Array.from(history.keys())
+        let symbolList = ''
+
+        if (currentSymbols.length > 0) {
+            const symbolList = currentSymbols.map(symbol => {
+                return { symbol }
+            })
+            localStorage.setItem('symbols', JSON.stringify(symbolList))
+        } else {
+            localStorage.removeItem('symbols')
+        }
     }
 
     const saveSelectedPriceToLocalStorage = selectedPriceOption => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('price', selectedPriceOption)
-        }
+        localStorage.setItem('price', selectedPriceOption)
     }
 
     const fetchSymbol = async symbolQuery => {
@@ -225,6 +238,7 @@
     $: {
         history,
             selectedPriceOption &&
+                isDocumentReady &&
                 updateQueryParams(history, selectedPriceOption)
     }
 
@@ -234,7 +248,15 @@
 
     $: {
         selectedPriceOption &&
+            isDocumentReady &&
             saveSelectedPriceToLocalStorage(selectedPriceOption)
+    }
+
+    $: {
+        history,
+            selectedPriceOption &&
+                isDocumentReady &&
+                saveSymbolsToLocalStorage(history)
     }
 </script>
 
