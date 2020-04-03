@@ -10,31 +10,22 @@
     import SearchField from '../components/search.svelte'
 
     const { page } = stores()
-
     const { symbols, price } = $page.query
-    const symbolList = symbols ? symbols.split(',') : []
 
-    let DEFAULT_OPTIONS
-    if (symbolList && symbolList.length > 0) {
-        DEFAULT_OPTIONS = symbolList.map(symbol => {
-            return { symbol }
-        })
-    } else {
-        DEFAULT_OPTIONS = [
-            {
-                symbol: 'AMZN',
-            },
-            {
-                symbol: 'GOOGL',
-            },
-            {
-                symbol: 'SHOP',
-            },
-            {
-                symbol: 'MSFT',
-            },
-        ]
-    }
+    const DEFAULT_OPTIONS = [
+        {
+            symbol: 'AMZN',
+        },
+        {
+            symbol: 'GOOGL',
+        },
+        {
+            symbol: 'SHOP',
+        },
+        {
+            symbol: 'MSFT',
+        },
+    ]
 
     const PRICE_OPTIONS = [
         {
@@ -55,9 +46,12 @@
         },
     ]
 
-    let selectedPriceOption = PRICE_OPTIONS.find(({ value }) => value === price)
-        ? price
-        : 'close'
+    const DEFAULT_PRICE_OPTION = 'close'
+
+    const LS_SYMBOLS = 'symbols'
+    const LS_PRICE = 'price'
+
+    let selectedPriceOption
 
     const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
@@ -73,9 +67,51 @@
     let loading = false
     let highlightedSymbolIndex = null
 
-    onMount(() => {
-        fetchStockData(DEFAULT_OPTIONS)
+    let isDocumentReady = false
+
+    onMount(async () => {
+        let selectedSymbols = []
+
+        selectedPriceOption = getDefaultPriceOption(price)
+
+        selectedSymbols = getDefaultOptions(symbols)
+        await fetchStockData(selectedSymbols)
+
+        isDocumentReady = true
     })
+
+    const getDefaultOptions = symbols => {
+        let symbolList = []
+        const storedSymbols = localStorage.getItem(LS_SYMBOLS)
+
+        if (symbols) {
+            symbolList = symbols.split(',')
+        } else if (storedSymbols) {
+            symbolList = storedSymbols.split(',')
+        }
+
+        if (symbolList.length > 0) {
+            return symbolList.map(symbol => {
+                return { symbol }
+            })
+        }
+
+        return DEFAULT_OPTIONS
+    }
+
+    const getDefaultPriceOption = price => {
+        const storedPrice = localStorage.getItem(LS_PRICE)
+
+        if (price && priceOptionExists(price)) {
+            return price
+        }
+
+        if (storedPrice && priceOptionExists(storedPrice)) {
+            return storedPrice
+        }
+
+        return DEFAULT_PRICE_OPTION
+    }
 
     const updateQueryParams = (history, priceOption) => {
         const currentSymbols = Array.from(history.keys())
@@ -84,12 +120,9 @@
         if (currentSymbols.length > 0) {
             queryParams += `symbols=${currentSymbols.join(',')}&`
         }
-
         queryParams += `price=${priceOption}`
 
-        if (typeof document !== 'undefined') {
-            goto(queryParams)
-        }
+        goto(queryParams)
     }
 
     const getNewSymbols = (stocks, history) => {
@@ -103,6 +136,25 @@
             seriesList = [...seriesList, [...prices]]
         }
     }
+
+    const saveSelectedSymbols = history => {
+        const currentSymbols = Array.from(history.keys())
+        let symbolList = ''
+
+        if (currentSymbols.length > 0) {
+            symbolList = currentSymbols.join(',')
+            localStorage.setItem(LS_SYMBOLS, symbolList)
+        } else {
+            localStorage.setItem(LS_SYMBOLS, symbolList)
+        }
+    }
+
+    const saveSelectedPrice = selectedPriceOption => {
+        localStorage.setItem(LS_PRICE, selectedPriceOption)
+    }
+
+    const priceOptionExists = price =>
+        PRICE_OPTIONS.find(({ value }) => value === price)
 
     const fetchSymbol = async symbolQuery => {
         try {
@@ -213,13 +265,24 @@
     }
 
     $: {
-        history,
+        history &&
             selectedPriceOption &&
-                updateQueryParams(history, selectedPriceOption)
+            isDocumentReady &&
+            updateQueryParams(history, selectedPriceOption)
     }
 
     $: {
         history.size && resetHighlightedSymbol()
+    }
+
+    $: {
+        selectedPriceOption &&
+            isDocumentReady &&
+            saveSelectedPrice(selectedPriceOption)
+    }
+
+    $: {
+        history && isDocumentReady && saveSelectedSymbols(history)
     }
 </script>
 
