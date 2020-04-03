@@ -12,31 +12,6 @@
     const { page } = stores()
 
     const { symbols, price } = $page.query
-    const symbolList = symbols ? symbols.split(',') : []
-
-    let DEFAULT_OPTIONS
-    if (symbolList && symbolList.length > 0) {
-        DEFAULT_OPTIONS = symbolList.map(symbol => {
-            return { symbol }
-        })
-    } else if (localStorage.hasOwnProperty('symbols')) {
-        DEFAULT_OPTIONS = localStorage.getItem('symbols')
-    } else {
-        DEFAULT_OPTIONS = [
-            {
-                symbol: 'AMZN',
-            },
-            {
-                symbol: 'GOOGL',
-            },
-            {
-                symbol: 'SHOP',
-            },
-            {
-                symbol: 'MSFT',
-            },
-        ]
-    }
 
     const PRICE_OPTIONS = [
         {
@@ -78,11 +53,37 @@
     let isDocumentReady = false
 
     onMount(() => {
-        fetchStockData(DEFAULT_OPTIONS)
+        const symbolList = symbols ? symbols.split(',') : []
+        let DEFAULT_OPTIONS = []
 
         if (typeof document !== 'undefined') {
             isDocumentReady = true
         }
+
+        if (symbolList && symbolList.length > 0) {
+            DEFAULT_OPTIONS = symbolList.map(symbol => {
+                return { symbol }
+            })
+        } else if (localStorage.hasOwnProperty('symbols')) {
+            DEFAULT_OPTIONS = JSON.parse(localStorage.getItem('symbols'))
+        } else {
+            DEFAULT_OPTIONS = [
+                {
+                    symbol: 'AMZN',
+                },
+                {
+                    symbol: 'GOOGL',
+                },
+                {
+                    symbol: 'SHOP',
+                },
+                {
+                    symbol: 'MSFT',
+                },
+            ]
+        }
+
+        fetchStockData(DEFAULT_OPTIONS)
     })
 
     const updateQueryParams = (history, priceOption) => {
@@ -253,10 +254,7 @@
     }
 
     $: {
-        history,
-            selectedPriceOption &&
-                isDocumentReady &&
-                saveSymbolsToLocalStorage(history)
+        history, isDocumentReady && saveSymbolsToLocalStorage(history)
     }
 </script>
 
