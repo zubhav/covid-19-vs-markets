@@ -69,15 +69,15 @@
 
     let isDocumentReady = false
 
-    onMount(() => {
+    onMount(async () => {
         let selectedSymbols = []
-
-        isDocumentReady = true
 
         selectedPriceOption = getDefaultPriceOption(price)
 
         selectedSymbols = getDefaultOptions(symbols)
-        fetchStockData(selectedSymbols)
+        await fetchStockData(selectedSymbols)
+
+        isDocumentReady = true
     })
 
     const getDefaultOptions = symbols => {
@@ -265,10 +265,10 @@
     }
 
     $: {
-        history,
+        history &&
             selectedPriceOption &&
-                isDocumentReady &&
-                updateQueryParams(history, selectedPriceOption)
+            isDocumentReady &&
+            updateQueryParams(history, selectedPriceOption)
     }
 
     $: {
