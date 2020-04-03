@@ -13,8 +13,6 @@
 
     const { symbols, price } = $page.query
 
-    let test = 2
-
     const PRICE_OPTIONS = [
         {
             label: 'Open',
@@ -58,7 +56,7 @@
 
         if (symbols) {
             symbolList = symbols.split(',')
-        } else if (localStorage.hasOwnProperty('symbols')) {
+        } else if (localStorage.getItem('symbols')) {
             const symbolsString = localStorage.getItem('symbols')
             symbolList = symbolsString.split(',')
         }
@@ -66,7 +64,7 @@
         if (price && priceOptionExists(price)) {
             selectedPriceOption = price
         } else if (
-            localStorage.hasOwnProperty('price') &&
+            localStorage.getItem('price') &&
             priceOptionExists(localStorage.getItem('price'))
         ) {
             selectedPriceOption = localStorage.getItem('price')
