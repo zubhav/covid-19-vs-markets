@@ -4,8 +4,8 @@
     import { fetchFromApi } from '../utils/fetchFromApi.utils'
     import { getDateFromTimestamp } from '../utils/date.utils'
     import {
-        getLocalStorageItem,
         setLocalStorageItem,
+        getLocalStorageItem,
     } from '../utils/localStorage.utils'
     import Chart from '../components/chart.svelte'
     import Loader from '../components/loader.svelte'
