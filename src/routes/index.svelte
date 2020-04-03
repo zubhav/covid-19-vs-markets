@@ -13,6 +13,8 @@
 
     const { symbols, price } = $page.query
 
+    let test = 0
+
     const PRICE_OPTIONS = [
         {
             label: 'Open',
