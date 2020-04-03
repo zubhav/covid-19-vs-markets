@@ -3,6 +3,10 @@
     import { stores, goto } from '@sapper/app'
     import { fetchFromApi } from '../utils/fetchFromApi.utils'
     import { getDateFromTimestamp } from '../utils/date.utils'
+    import {
+        getLocalStorageItem,
+        setLocalStorageItem,
+    } from '../utils/localStorage.utils'
     import Chart from '../components/chart.svelte'
     import Loader from '../components/loader.svelte'
     import Card from '../components/card.svelte'
@@ -82,7 +86,7 @@
 
     const getDefaultOptions = symbols => {
         let symbolList = []
-        const storedSymbols = localStorage.getItem(LS_SYMBOLS)
+        const storedSymbols = getLocalStorageItem(LS_SYMBOLS)
 
         if (symbols) {
             symbolList = symbols.split(',')
@@ -100,7 +104,7 @@
     }
 
     const getDefaultPriceOption = price => {
-        const storedPrice = localStorage.getItem(LS_PRICE)
+        const storedPrice = getLocalStorageItem(LS_PRICE)
 
         if (price && priceOptionExists(price)) {
             return price
@@ -143,14 +147,14 @@
 
         if (currentSymbols.length > 0) {
             symbolList = currentSymbols.join(',')
-            localStorage.setItem(LS_SYMBOLS, symbolList)
+            setLocalStorageItem(LS_SYMBOLS, symbolList)
         } else {
-            localStorage.setItem(LS_SYMBOLS, symbolList)
+            setLocalStorageItem(LS_SYMBOLS, symbolList)
         }
     }
 
     const saveSelectedPrice = selectedPriceOption => {
-        localStorage.setItem(LS_PRICE, selectedPriceOption)
+        setLocalStorageItem(LS_PRICE, selectedPriceOption)
     }
 
     const priceOptionExists = price =>
