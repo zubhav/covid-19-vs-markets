@@ -51,8 +51,15 @@
     let isDocumentReady = false
 
     onMount(() => {
-        const symbolList = symbols ? symbols.split(',') : []
         let DEFAULT_OPTIONS = []
+        let symbolList
+
+        if (symbols) {
+            symbolList = symbols.split(',')
+        } else if (localStorage.hasOwnProperty('symbols')) {
+            const symbolsString = localStorage.getItem('symbols')
+            symbolList = symbolsString.split(',')
+        }
 
         if (price && priceOptionExists(price)) {
             selectedPriceOption = price
@@ -69,8 +76,6 @@
             DEFAULT_OPTIONS = symbolList.map(symbol => {
                 return { symbol }
             })
-        } else if (localStorage.hasOwnProperty('symbols')) {
-            DEFAULT_OPTIONS = JSON.parse(localStorage.getItem('symbols'))
         } else {
             DEFAULT_OPTIONS = [
                 {
@@ -123,10 +128,8 @@
         const currentSymbols = Array.from(history.keys())
 
         if (currentSymbols.length > 0) {
-            const symbolList = currentSymbols.map(symbol => {
-                return { symbol }
-            })
-            localStorage.setItem('symbols', JSON.stringify(symbolList))
+            const symbolList = currentSymbols.join(',')
+            localStorage.setItem('symbols', symbolList)
         } else {
             localStorage.removeItem('symbols')
         }
