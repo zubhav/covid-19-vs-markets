@@ -56,8 +56,7 @@
     },
     "lint-staged": {
         "{api,src,cypress}/**/*.{js,svelte}": [
-            "eslint src api cypress --ext .svelte,.js",
-            "git add"
+            "eslint src api cypress --ext .svelte,.js"
         ]
     },
     "husky": {
