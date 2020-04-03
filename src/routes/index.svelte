@@ -10,7 +10,6 @@
     import SearchField from '../components/search.svelte'
 
     const { page } = stores()
-
     const { symbols, price } = $page.query
 
     const PRICE_OPTIONS = [
@@ -32,6 +31,9 @@
         },
     ]
 
+    const LS_SYMBOLS = 'symbols'
+    const LS_PRICE = 'price'
+
     let selectedPriceOption
 
     const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
@@ -52,53 +54,66 @@
 
     onMount(() => {
         let DEFAULT_OPTIONS = []
-        let symbolList
-
-        if (symbols) {
-            symbolList = symbols.split(',')
-        } else if (localStorage.getItem('symbols')) {
-            const symbolsString = localStorage.getItem('symbols')
-            symbolList = symbolsString.split(',')
-        }
-
-        if (price && priceOptionExists(price)) {
-            selectedPriceOption = price
-        } else if (
-            localStorage.getItem('price') &&
-            priceOptionExists(localStorage.getItem('price'))
-        ) {
-            selectedPriceOption = localStorage.getItem('price')
-        } else {
-            selectedPriceOption = 'close'
-        }
-
-        if (symbolList && symbolList.length > 0) {
-            DEFAULT_OPTIONS = symbolList.map(symbol => {
-                return { symbol }
-            })
-        } else {
-            DEFAULT_OPTIONS = [
-                {
-                    symbol: 'AMZN',
-                },
-                {
-                    symbol: 'GOOGL',
-                },
-                {
-                    symbol: 'SHOP',
-                },
-                {
-                    symbol: 'MSFT',
-                },
-            ]
-        }
 
         if (typeof document !== 'undefined') {
             isDocumentReady = true
         }
 
+        selectedPriceOption = getDefaultPriceOption(price)
+
+        DEFAULT_OPTIONS = getDefaultOptions(symbols)
         fetchStockData(DEFAULT_OPTIONS)
     })
+
+    const getDefaultOptions = symbols => {
+        let symbolList
+        const storedSymbols = localStorage.getItem(LS_SYMBOLS)
+
+        if (symbols) {
+            symbolList = symbols.split(',')
+        } else if (storedSymbols) {
+            const symbolsString = storedSymbols
+            symbolList = symbolsString.split(',')
+        }
+
+        if (symbolList && symbolList.length > 0) {
+            return symbolList.map(symbol => {
+                return { symbol }
+            })
+        }
+
+        const options = [
+            {
+                symbol: 'AMZN',
+            },
+            {
+                symbol: 'GOOGL',
+            },
+            {
+                symbol: 'SHOP',
+            },
+            {
+                symbol: 'MSFT',
+            },
+        ]
+
+        return options
+    }
+
+    const getDefaultPriceOption = price => {
+        const storedPrice = localStorage.getItem(LS_PRICE)
+
+        if (price && priceOptionExists(price)) {
+            return price
+        }
+        if (storedPrice && priceOptionExists(storedPrice)) {
+            return storedPrice
+        }
+
+        const priceOption = 'close'
+
+        return priceOption
+    }
 
     const updateQueryParams = (history, priceOption) => {
         const currentSymbols = Array.from(history.keys())
@@ -124,19 +139,20 @@
         }
     }
 
-    const saveSymbolsToLocalStorage = history => {
+    const saveSymbols = history => {
         const currentSymbols = Array.from(history.keys())
+        let symbolList = ''
 
         if (currentSymbols.length > 0) {
-            const symbolList = currentSymbols.join(',')
-            localStorage.setItem('symbols', symbolList)
+            symbolList = currentSymbols.join(',')
+            localStorage.setItem(LS_SYMBOLS, symbolList)
         } else {
-            localStorage.removeItem('symbols')
+            localStorage.setItem(LS_SYMBOLS, symbolList)
         }
     }
 
-    const saveSelectedPriceToLocalStorage = selectedPriceOption => {
-        localStorage.setItem('price', selectedPriceOption)
+    const saveSelectedPrice = selectedPriceOption => {
+        localStorage.setItem(LS_PRICE, selectedPriceOption)
     }
 
     const priceOptionExists = price =>
@@ -264,11 +280,11 @@
     $: {
         selectedPriceOption &&
             isDocumentReady &&
-            saveSelectedPriceToLocalStorage(selectedPriceOption)
+            saveSelectedPrice(selectedPriceOption)
     }
 
     $: {
-        history, isDocumentReady && saveSymbolsToLocalStorage(history)
+        history, isDocumentReady && saveSymbols(history)
     }
 </script>
 
