@@ -121,7 +121,6 @@
 
     const saveSymbolsToLocalStorage = history => {
         const currentSymbols = Array.from(history.keys())
-        let symbolList = ''
 
         if (currentSymbols.length > 0) {
             const symbolList = currentSymbols.map(symbol => {
