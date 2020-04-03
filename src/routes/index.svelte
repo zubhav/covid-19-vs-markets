@@ -32,9 +32,7 @@
         },
     ]
 
-    let selectedPriceOption = PRICE_OPTIONS.find(({ value }) => value === price)
-        ? price
-        : 'close'
+    let selectedPriceOption
 
     const LINE_COLORS = ['#b52b26', '#1c2db0', '#0f9429', '#d17819']
 
@@ -56,8 +54,15 @@
         const symbolList = symbols ? symbols.split(',') : []
         let DEFAULT_OPTIONS = []
 
-        if (typeof document !== 'undefined') {
-            isDocumentReady = true
+        if (price && priceOptionExists(price)) {
+            selectedPriceOption = price
+        } else if (
+            localStorage.hasOwnProperty('price') &&
+            priceOptionExists(localStorage.getItem('price'))
+        ) {
+            selectedPriceOption = localStorage.getItem('price')
+        } else {
+            selectedPriceOption = 'close'
         }
 
         if (symbolList && symbolList.length > 0) {
@@ -81,6 +86,10 @@
                     symbol: 'MSFT',
                 },
             ]
+        }
+
+        if (typeof document !== 'undefined') {
+            isDocumentReady = true
         }
 
         fetchStockData(DEFAULT_OPTIONS)
@@ -127,6 +136,9 @@
     const saveSelectedPriceToLocalStorage = selectedPriceOption => {
         localStorage.setItem('price', selectedPriceOption)
     }
+
+    const priceOptionExists = price =>
+        PRICE_OPTIONS.find(({ value }) => value === price)
 
     const fetchSymbol = async symbolQuery => {
         try {
