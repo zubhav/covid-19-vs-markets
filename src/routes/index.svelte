@@ -13,7 +13,7 @@
 
     const { symbols, price } = $page.query
 
-    let test = 1
+    let test = 2
 
     const PRICE_OPTIONS = [
         {
