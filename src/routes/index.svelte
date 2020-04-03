@@ -179,7 +179,7 @@
             if (!alreadyExists) {
                 const result = await fetchSymbol(symbol)
                 if (result) {
-                    await fetchStockData([result])
+                    await fetchStockData(result)
                 } else {
                     alert(`Stock not found: ${symbol}`)
                 }
@@ -211,7 +211,8 @@
         highlightedSymbolIndex = null
     }
 
-    const fetchStockData = async options => {
+    const fetchStockData = async symbols => {
+        const options = [].concat(symbols)
         const stocks = options.map(({ symbol }) => symbol)
         const newEntries = getNewSymbols(stocks, history)
         const stocksQuery = newEntries.join(',')
