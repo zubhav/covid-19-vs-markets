@@ -7,11 +7,11 @@
         getLocalStorageItem,
         setLocalStorageItem,
     } from '../utils/localStorage.utils'
-    import Chart from '../components/chart.svelte'
-    import Loader from '../components/loader.svelte'
-    import Card from '../components/card.svelte'
-    import EmptyCard from '../components/empty-card.svelte'
-    import SearchField from '../components/search.svelte'
+    import Chart from '../components/Chart/Chart.svelte'
+    import Loader from '../components/Loader/Loader.svelte'
+    import Card from '../components/Card/Card.svelte'
+    import EmptyCard from '../components/EmptyCard/EmptyCard.svelte'
+    import SearchField from '../components/Search/Search.svelte'
 
     const { page } = stores()
     const { symbols, price } = $page.query

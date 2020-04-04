@@ -27,6 +27,7 @@
         "context": true,
         "describe": true,
         "it": true,
-        "expect"
+        "expect": true,
+        "jest": true
     }
 }

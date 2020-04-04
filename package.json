@@ -9,8 +9,11 @@
         "now-build": "npm run export",
         "watch:tailwind": "postcss static/tailwind.css -o static/index.css -w",
         "build:tailwind": "NODE_ENV=production postcss static/tailwind.css -o static/index.css",
-        "format": "eslint src api cypress --ext .svelte,.js",
+        "format": "eslint src api cypress stories --ext .svelte,.js",
+        "test": "jest --coverage --watch",
+        "test:ci": "jest --ci --coverage",
         "cypress:open": "cypress open",
+        "cypress:run": "cypress run",
         "storybook": "start-storybook -p 6006",
         "build-storybook": "build-storybook"
     },
@@ -26,7 +29,7 @@
         "@babel/core": "^7.0.0",
         "@babel/plugin-syntax-dynamic-import": "^7.0.0",
         "@babel/plugin-transform-runtime": "^7.0.0",
-        "@babel/preset-env": "^7.0.0",
+        "@babel/preset-env": "^7.9.0",
         "@babel/runtime": "^7.0.0",
         "@fullhuman/postcss-purgecss": "^2.1.0",
         "@rollup/plugin-commonjs": "^11.0.0",
@@ -37,11 +40,16 @@
         "@storybook/addons": "^5.3.18",
         "@storybook/svelte": "^5.3.18",
         "@testing-library/cypress": "^6.0.0",
+        "@testing-library/jest-dom": "^5.3.0",
+        "@testing-library/svelte": "^3.0.0",
+        "babel-jest": "^25.2.6",
         "babel-loader": "^8.1.0",
-        "cypress": "^4.2.0",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "cypress": "^4.3.0",
         "eslint": "^6.8.0",
         "eslint-plugin-svelte3": "^2.7.3",
         "husky": "^4.2.3",
+        "jest": "^25.2.7",
         "lint-staged": "^10.0.9",
         "npm-run-all": "^4.1.5",
         "postcss-cli": "^7.1.0",
@@ -51,12 +59,14 @@
         "rollup-plugin-terser": "^4.0.4",
         "sapper": "^0.27.0",
         "svelte": "^3.20.1",
+        "svelte-jester": "^1.0.5",
         "svelte-loader": "^2.13.6",
         "tailwindcss": "^1.2.0"
     },
     "lint-staged": {
-        "{api,src,cypress}/**/*.{js,svelte}": [
-            "npm run format"
+        "{api,src,cypress,stories}/**/*.{js,svelte}": [
+            "npm run format",
+            "jest --bail --findRelatedTests"
         ]
     },
     "husky": {
