@@ -17,6 +17,13 @@ jobs:
               run: npm ci
             - name: Lint
               run: npm run format
+            - name: Test
+              run: npm run test
+             - name: Coverage
+              uses: ziishaned/jest-reporter-action@v0.0.1
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  test-command: 'npm run test:ci'
             - name: Build
               run: npm run build
             - name: E2E
