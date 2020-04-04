@@ -72,23 +72,25 @@
     })
 
     const getDefaultOptions = symbols => {
-        const storedSymbols = getLocalStorageItem(LS_SYMBOLS)
-
         if (symbols) {
             return symbols.split(',')
-        } else if (storedSymbols) {
-            return storedSymbols.split(',')
-        } else {
-            return DEFAULT_OPTIONS
         }
+
+        const storedSymbols = getLocalStorageItem(LS_SYMBOLS)
+
+        if (storedSymbols) {
+            return storedSymbols.split(',')
+        }
+
+        return DEFAULT_OPTIONS
     }
 
     const getDefaultPriceOption = price => {
-        const storedPrice = getLocalStorageItem(LS_PRICE)
-
         if (price && priceOptionExists(price)) {
             return price
         }
+
+        const storedPrice = getLocalStorageItem(LS_PRICE)
 
         if (storedPrice && priceOptionExists(storedPrice)) {
             return storedPrice
