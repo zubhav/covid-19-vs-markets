@@ -38,7 +38,7 @@ export default async (request, response) => {
                     ).then((res) => res.json())
                 }
 
-                return Promise.resolve({ symbol: symbol })
+                return Promise.resolve(null)
             }
         )
 
