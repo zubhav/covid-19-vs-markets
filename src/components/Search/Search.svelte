@@ -22,6 +22,7 @@
     </span>
     <input
         type="text"
+        aria-label="Search"
         class="h-10 pl-10 border border-solid border-gray-600 rounded-lg
         placeholder-gray-600 disabled:cursor-not-allowed"
         placeholder="Add a new symbol..."
