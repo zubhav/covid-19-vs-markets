@@ -12,6 +12,9 @@ export default async (request, response) => {
     const FIRST_DAY_2020 = '01/02/2020'
     const CURRENT_DAY_MIDNIGHT = new Date().setHours(0, 0, 0, 0)
 
+    const from = getTimestampFromDateStr(new Date(FIRST_DAY_2020))
+    const to = convertMsToS(CURRENT_DAY_MIDNIGHT)
+
     const querySymbols = request.query.symbols
     const symbolList = querySymbols ? querySymbols.split(',') : []
 
@@ -30,17 +33,12 @@ export default async (request, response) => {
         const fetchSymbolDataPromises = verifySymbolResults.map(
             ({ symbol, found }) => {
                 if (found) {
-                    const from = getTimestampFromDateStr(
-                        new Date(FIRST_DAY_2020)
-                    )
-                    const to = convertMsToS(CURRENT_DAY_MIDNIGHT)
-
                     return fetch(
                         `${API_ENDPOINT}?symbol=${symbol.toUpperCase()}&resolution=D&from=${from}&to=${to}&token=${API_KEY}`
                     ).then((res) => res.json())
                 }
 
-                return Promise.resolve(null)
+                return Promise.resolve({ symbol: symbol })
             }
         )
 

@@ -10,6 +10,6 @@ export const fetchSymbol = async (symbol) => {
         )
         return { symbol: found.data.symbol, found: true }
     } catch (err) {
-        return { symbol, found: false }
+        return { symbol: symbol, found: false }
     }
 }
