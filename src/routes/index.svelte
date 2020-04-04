@@ -16,20 +16,7 @@
     const { page } = stores()
     const { symbols, price } = $page.query
 
-    const DEFAULT_OPTIONS = [
-        {
-            symbol: 'AMZN',
-        },
-        {
-            symbol: 'GOOGL',
-        },
-        {
-            symbol: 'SHOP',
-        },
-        {
-            symbol: 'MSFT',
-        },
-    ]
+    const DEFAULT_OPTIONS = ['AMZN', 'GOOGL', 'SHOP', 'MSFT']
 
     const PRICE_OPTIONS = [
         {
@@ -85,22 +72,15 @@
     })
 
     const getDefaultOptions = symbols => {
-        let symbolList = []
         const storedSymbols = getLocalStorageItem(LS_SYMBOLS)
 
         if (symbols) {
-            symbolList = symbols.split(',')
+            return symbols.split(',')
         } else if (storedSymbols) {
-            symbolList = storedSymbols.split(',')
+            return storedSymbols.split(',')
+        } else {
+            return DEFAULT_OPTIONS
         }
-
-        if (symbolList.length > 0) {
-            return symbolList.map(symbol => {
-                return { symbol }
-            })
-        }
-
-        return DEFAULT_OPTIONS
     }
 
     const getDefaultPriceOption = price => {
@@ -129,8 +109,12 @@
         goto(queryParams)
     }
 
-    const getNewSymbols = (stocks, history) => {
-        return stocks.filter(stock => !history.get(stock))
+    const isValidSymbol = symbol => symbol.length > 0 && symbol.length <= 5
+
+    const getValidSymbolsToFetch = (stocks, history) => {
+        return stocks.filter(stock => {
+            return isValidSymbol(stock) && !history.get(stock)
+        })
     }
 
     const updateSeries = (history, priceSelected) => {
@@ -160,33 +144,16 @@
     const priceOptionExists = price =>
         PRICE_OPTIONS.find(({ value }) => value === price)
 
-    const fetchSymbol = async symbolQuery => {
-        try {
-            const result = await fetchFromApi(`/api/symbols/${symbolQuery}`)
-            const data = await result.json()
-            return data
-        } catch (err) {
-            console.info('Error retrieving this symbol')
-            console.info(err)
-            return null
-        }
-    }
-
     const addNewSymbol = async input => {
         const symbol = input
             .trim()
             .replace('$', '')
             .toUpperCase()
 
-        if (symbol.length > 0 && symbol.length <= 5) {
+        if (isValidSymbol(symbol)) {
             const alreadyExists = history.has(symbol)
             if (!alreadyExists) {
-                const result = await fetchSymbol(symbol)
-                if (result) {
-                    await fetchStockData([result])
-                } else {
-                    alert(`Stock not found: ${symbol}`)
-                }
+                await fetchStockData(symbol)
             } else {
                 alert(`Stock already selected: ${symbol}`)
             }
@@ -215,9 +182,9 @@
         highlightedSymbolIndex = null
     }
 
-    const fetchStockData = async options => {
-        const stocks = options.map(({ symbol }) => symbol)
-        const newEntries = getNewSymbols(stocks, history)
+    const fetchStockData = async symbols => {
+        const options = [].concat(symbols) // compatible with string and array
+        const newEntries = getValidSymbolsToFetch(options, history)
         const stocksQuery = newEntries.join(',')
 
         loading = true
@@ -229,14 +196,19 @@
             const data = await result.json()
             const { series, labels } = data
 
-            for (let { symbol, open, close, high, low } of series) {
-                history = history.set(symbol, {
-                    symbol: symbol,
-                    open: open,
-                    close: close,
-                    high: high,
-                    low: low,
-                })
+            const errorSymbols = []
+            for (let { symbol, open, close, high, low, error } of series) {
+                if (!error) {
+                    history = history.set(symbol, {
+                        symbol: symbol,
+                        open: open,
+                        close: close,
+                        high: high,
+                        low: low,
+                    })
+                } else {
+                    errorSymbols.push(symbol)
+                }
             }
 
             if (dates.length === 0) {
@@ -244,8 +216,16 @@
             }
 
             loading = false
+
+            if (errorSymbols.length > 0) {
+                alert(
+                    `Error retrieving the following symbols: ${errorSymbols.join(
+                        ','
+                    )}`
+                )
+            }
         } catch (err) {
-            console.info('Error fetching stock data', stocks)
+            console.info('Error fetching stock data', options)
             console.info(err)
         }
     }
@@ -321,9 +301,7 @@
                 {/each}
                 {#each Array(4 - history.size) as _, idx}
                     <EmptyCard>
-                        {#if dates.length === 0}
-                            <Loader />
-                        {:else if loading && idx === 0}
+                        {#if loading}
                             <Loader />
                         {:else}?{/if}
                     </EmptyCard>
