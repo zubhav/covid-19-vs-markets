@@ -1,4 +1,4 @@
-process.env.TZ = 'UTC'
+process.TZ = 'UTC'
 
 module.exports = {
     verbose: true,
