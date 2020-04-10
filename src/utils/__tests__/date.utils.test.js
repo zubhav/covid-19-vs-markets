@@ -18,13 +18,13 @@ describe('Date utils', () => {
     describe('getDateFromTimestamp', () => {
         describe('When the timestamp represents 09/04/2020', () => {
             it('should return the timestamp converted to dd/mm/yyyy format', () => {
-                expect(getDateFromTimestamp(1586473214)).toEqual('09/04/2020')
+                expect(getDateFromTimestamp(1586473214)).toEqual('10/04/2020')
             })
         })
 
         describe('When the timestamp represents 08/04/2020', () => {
             it('should return the timestamp converted to dd/mm/yyyy format', () => {
-                expect(getDateFromTimestamp(1586386984)).toEqual('08/04/2020')
+                expect(getDateFromTimestamp(1586386984)).toEqual('09/04/2020')
             })
         })
     })
