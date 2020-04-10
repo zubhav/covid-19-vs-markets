@@ -1,4 +1,4 @@
-export const ga = gaID => {
+export const ga = (gaID) => {
     window.dataLayer = window.dataLayer || []
     function gtag() {
         window.dataLayer.push(arguments)
