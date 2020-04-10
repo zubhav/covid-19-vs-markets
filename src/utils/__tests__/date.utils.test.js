@@ -1,5 +1,7 @@
 import { padZero, getDateFromTimestamp } from '../date.utils'
 
+process.TZ = 'UTC'
+
 describe('Date utils', () => {
     describe('padZero', () => {
         describe('When the input is between 0 and 9', () => {

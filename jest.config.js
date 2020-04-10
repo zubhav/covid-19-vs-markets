@@ -1,5 +1,3 @@
-process.TZ = 'UTC'
-
 module.exports = {
     verbose: true,
     moduleFileExtensions: ['js', 'svelte'],
