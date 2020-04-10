@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom/extend-expect'
 import { padZero, getDateFromTimestamp } from '../date.utils'
 
 describe('Date utils', () => {

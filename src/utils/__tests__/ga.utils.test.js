@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom/extend-expect'
 import { ga } from '../ga.utils'
 
 describe('Google analytics utils', () => {

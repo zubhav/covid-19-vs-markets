@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom/extend-expect'
 import { fetchFromApi } from '../fetchFromApi.utils'
 
 const fetchSpy = jest.fn().mockImplementation(() => 'fetch')
