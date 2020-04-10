@@ -35,10 +35,14 @@ export default async (request, response) => {
                 if (found) {
                     return fetch(
                         `${API_ENDPOINT}?symbol=${symbol.toUpperCase()}&resolution=D&from=${from}&to=${to}&token=${API_KEY}`
-                    ).then((res) => res.json())
+                    )
+                        .then(res => res.json())
+                        .then(data => {
+                            return { symbol, error: false, ...data }
+                        })
                 }
 
-                return Promise.resolve(null)
+                return Promise.resolve({ symbol, error: true })
             }
         )
 
@@ -53,29 +57,21 @@ export default async (request, response) => {
         let data = []
         let dates = []
 
-        fetchSymbolDataResults.map((res, idx) => {
-            const symbol = symbolList[idx]
+        fetchSymbolDataResults.map(res => {
+            const { symbol, error, c, o, h, l, t, s } = res
+            const err = error || s === 'no_data'
 
-            if (res) {
-                const { c, o, h, l, t, s } = res
-                if (s !== 'no_data') {
-                    data.push({
-                        close: c,
-                        open: o,
-                        high: h,
-                        low: l,
-                        symbol,
-                    })
+            data.push({
+                symbol,
+                error: err,
+                close: c,
+                open: o,
+                high: h,
+                low: l,
+            })
 
-                    if (dates.length === 0) {
-                        dates = t
-                    }
-                }
-            } else {
-                data.push({
-                    symbol,
-                    error: true,
-                })
+            if (dates.length === 0 && t.length > 0 && !err) {
+                dates = t
             }
         })
 
