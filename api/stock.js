@@ -40,6 +40,9 @@ export default async (request, response) => {
                         .then(data => {
                             return { symbol, error: false, ...data }
                         })
+                    // .catch(() => {
+                    //     return { symbol, error: true }
+                    // })
                 }
 
                 return Promise.resolve({ symbol, error: true })
@@ -49,7 +52,9 @@ export default async (request, response) => {
         let fetchSymbolDataResults = []
 
         try {
-            fetchSymbolDataResults = await Promise.all(fetchSymbolDataPromises)
+            fetchSymbolDataResults = await Promise.allSettled(
+                fetchSymbolDataPromises
+            )
         } catch (e) {
             response.status(500)
         }
@@ -57,21 +62,34 @@ export default async (request, response) => {
         let data = []
         let dates = []
 
-        fetchSymbolDataResults.map(res => {
-            const { symbol, error, c, o, h, l, t, s } = res
-            const err = error || s === 'no_data'
+        fetchSymbolDataResults.map((res, idx) => {
+            const { value, status, reason } = res
+            const statusFulfilled = status === 'fulfilled'
 
-            data.push({
-                symbol,
-                error: err,
-                close: c,
-                open: o,
-                high: h,
-                low: l,
-            })
+            if (statusFulfilled) {
+                const { error, symbol } = value
+                const { c, o, h, l, t, s } = value
+                const err = error || s === 'no_data'
 
-            if (dates.length === 0 && t.length > 0 && !err) {
-                dates = t
+                data.push({
+                    symbol,
+                    error: err,
+                    close: c,
+                    open: o,
+                    high: h,
+                    low: l,
+                })
+
+                if (dates.length === 0 && t.length > 0 && !err) {
+                    dates = t
+                }
+            } else {
+                console.error('Could not retrieve stock data: ' + reason)
+
+                data.push({
+                    symbol: symbolList[idx],
+                    error: true,
+                })
             }
         })
 
