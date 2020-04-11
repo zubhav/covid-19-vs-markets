@@ -2,9 +2,9 @@ import fetch from 'node-fetch'
 import { fetchSymbol } from './_services/symbol.services'
 require('dotenv').config()
 
-const convertMsToS = (n) => n / 1000
+const convertMsToS = n => n / 1000
 
-const getTimestampFromDateStr = (dt) => convertMsToS(Math.floor(dt.getTime()))
+const getTimestampFromDateStr = dt => convertMsToS(Math.floor(dt.getTime()))
 
 export default async (request, response) => {
     const API_ENDPOINT = 'https://finnhub.io/api/v1/stock/candle'
@@ -19,7 +19,7 @@ export default async (request, response) => {
     const symbolList = querySymbols ? querySymbols.split(',') : []
 
     if (symbolList.length > 0) {
-        const verifySymbolPromises = symbolList.map((symbol) =>
+        const verifySymbolPromises = symbolList.map(symbol =>
             fetchSymbol(symbol)
         )
 
@@ -35,17 +35,26 @@ export default async (request, response) => {
                 if (found) {
                     return fetch(
                         `${API_ENDPOINT}?symbol=${symbol.toUpperCase()}&resolution=D&from=${from}&to=${to}&token=${API_KEY}`
-                    ).then((res) => res.json())
+                    )
+                        .then(res => res.json())
+                        .then(data => {
+                            return { symbol, error: false, ...data }
+                        })
+                        .catch(() => {
+                            return { symbol, error: true }
+                        })
                 }
 
-                return Promise.resolve(null)
+                return Promise.resolve({ symbol, error: true })
             }
         )
 
         let fetchSymbolDataResults = []
 
         try {
-            fetchSymbolDataResults = await Promise.all(fetchSymbolDataPromises)
+            fetchSymbolDataResults = await Promise.allSettled(
+                fetchSymbolDataPromises
+            )
         } catch (e) {
             response.status(500)
         }
@@ -53,29 +62,24 @@ export default async (request, response) => {
         let data = []
         let dates = []
 
-        fetchSymbolDataResults.map((res, idx) => {
-            const symbol = symbolList[idx]
+        fetchSymbolDataResults.map(res => {
+            const { value, status } = res
+            const statusRejected = status === 'rejected'
+            const { error, symbol, c, o, h, l, t, s } = value
 
-            if (res) {
-                const { c, o, h, l, t, s } = res
-                if (s !== 'no_data') {
-                    data.push({
-                        close: c,
-                        open: o,
-                        high: h,
-                        low: l,
-                        symbol,
-                    })
+            const err = error || s === 'no_data' || statusRejected
 
-                    if (dates.length === 0) {
-                        dates = t
-                    }
-                }
-            } else {
-                data.push({
-                    symbol,
-                    error: true,
-                })
+            data.push({
+                symbol,
+                error: err,
+                close: c,
+                open: o,
+                high: h,
+                low: l,
+            })
+
+            if (dates.length === 0 && t.length > 0 && !err) {
+                dates = t
             }
         })
 
