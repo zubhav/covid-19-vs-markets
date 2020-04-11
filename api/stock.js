@@ -2,9 +2,9 @@ import fetch from 'node-fetch'
 import { fetchSymbol } from './_services/symbol.services'
 require('dotenv').config()
 
-const convertMsToS = (n) => n / 1000
+const convertMsToS = n => n / 1000
 
-const getTimestampFromDateStr = (dt) => convertMsToS(Math.floor(dt.getTime()))
+const getTimestampFromDateStr = dt => convertMsToS(Math.floor(dt.getTime()))
 
 export default async (request, response) => {
     const API_ENDPOINT = 'https://finnhub.io/api/v1/stock/candle'
@@ -19,7 +19,7 @@ export default async (request, response) => {
     const symbolList = querySymbols ? querySymbols.split(',') : []
 
     if (symbolList.length > 0) {
-        const verifySymbolPromises = symbolList.map((symbol) =>
+        const verifySymbolPromises = symbolList.map(symbol =>
             fetchSymbol(symbol)
         )
 
@@ -40,9 +40,9 @@ export default async (request, response) => {
                         .then(data => {
                             return { symbol, error: false, ...data }
                         })
-                    // .catch(() => {
-                    //     return { symbol, error: true }
-                    // })
+                        .catch(() => {
+                            return { symbol, error: true }
+                        })
                 }
 
                 return Promise.resolve({ symbol, error: true })
@@ -62,34 +62,24 @@ export default async (request, response) => {
         let data = []
         let dates = []
 
-        fetchSymbolDataResults.map((res, idx) => {
-            const { value, status, reason } = res
-            const statusFulfilled = status === 'fulfilled'
+        fetchSymbolDataResults.map(res => {
+            const { value, status } = res
+            const statusRejected = status === 'rejected'
+            const { error, symbol, c, o, h, l, t, s } = value
 
-            if (statusFulfilled) {
-                const { error, symbol } = value
-                const { c, o, h, l, t, s } = value
-                const err = error || s === 'no_data'
+            const err = error || s === 'no_data' || statusRejected
 
-                data.push({
-                    symbol,
-                    error: err,
-                    close: c,
-                    open: o,
-                    high: h,
-                    low: l,
-                })
+            data.push({
+                symbol,
+                error: err,
+                close: c,
+                open: o,
+                high: h,
+                low: l,
+            })
 
-                if (dates.length === 0 && t.length > 0 && !err) {
-                    dates = t
-                }
-            } else {
-                console.error('Could not retrieve stock data: ' + reason)
-
-                data.push({
-                    symbol: symbolList[idx],
-                    error: true,
-                })
+            if (dates.length === 0 && t.length > 0 && !err) {
+                dates = t
             }
         })
 
