@@ -1,4 +1,6 @@
 <script>
+    import { beforeUpdate } from 'svelte'
+
     export let colors
     export let symbolToHighlight = null
 
@@ -32,6 +34,12 @@
     let chartHeight
     let chartWidth
 
+    beforeUpdate(() => {
+        for (let x of timeoutList) {
+            clearTimeout(x)
+        }
+    })
+
     function drawCanvas(newWidth, newHeight) {
         ctx = canvas.getContext('2d')
 
@@ -53,7 +61,7 @@
         ctx.stroke()
     }
 
-    function drawGraph(
+    async function drawGraph(
         chartWidth,
         chartHeight,
         valueSet,
@@ -64,8 +72,9 @@
             let yRange = maxYValue - minYValue
             let ySpacing = (chartHeight - Y_OFFSET) / yRange
             let xSpacing = (chartWidth - X_OFFSET) / (item.length - 1)
-
-            for (let j = 0; j < stopValuesAt; j++) {
+            let tempArr = new Array(stopValuesAt).fill()
+            console.log('tempArr', tempArr)
+            for (let [j] of tempArr.entries()) {
                 const xCalc = j * xSpacing
                 const xPos = xCalc + X_AXIS_OFFSET
 
@@ -82,9 +91,11 @@
                 const yPos2 =
                     chartHeight - yCalc2 - Y_OFFSET / 2 + CHART_TOP_PADDING
 
+                console.log('jSomething', j)
                 ctx.beginPath()
                 ctx.moveTo(xPos, yPos)
                 ctx.lineTo(xPos2, yPos2)
+
                 if (symbolToHighlight === i) {
                     ctx.lineWidth = 5
                 } else {
@@ -92,8 +103,19 @@
                 }
                 ctx.strokeStyle = colors[i]
                 ctx.stroke()
+
+                let timeoutId = await wait(20)
+                timeoutList.push(timeoutId)
             }
         }
+    }
+
+    let timeoutList = []
+
+    const wait = async (ms = 500) => {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms)
+        })
     }
 
     const getLabelRotation = width => (width <= 1024 ? 90 : 60)
