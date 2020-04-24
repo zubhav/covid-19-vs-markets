@@ -4,11 +4,11 @@
 
 The following steps will get you setup to contribute changes to this repo:
 
-1. Fork the repo (click the <kbd>Fork</kbd> button at the top right of [this page](https://github.com/Prubby/covid-19-vs-markets))
+1. Fork the repo (click the <kbd>Fork</kbd> button at the top right of [this page](https://github.com/zubhav/covid-19-vs-markets))
 2. Clone your fork locally
 
 ```bash
-git clone https://github.com/Prubby/covid-19-vs-markets.git
+git clone https://github.com/zubhav/covid-19-vs-markets.git
 cd covid-19-vs-markets
 ```
 
