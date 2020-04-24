@@ -1,5 +1,5 @@
 {
-    "alias": ["covid-19-vs-market"],
+    "alias": ["covid-19-vs-market", "covid19-vs-market"],
     "env": {
         "FINNHUB_API_KEY": "@finnhub_api_key",
         "FAUNA_SECRET_KEY": "@fauna_secret_key"
